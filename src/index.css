@@ -1,0 +1,172 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:wght@400;500;600;700&display=swap');
+
+/* ===========================
+   DESIGN TOKENS
+   =========================== */
+:root {
+  /* Colors - Light Mode */
+  --bg:            #F7F4EF;
+  --bg-alt:        #EDE9E2;
+  --surface:       #FFFFFF;
+  --surface-dim:   rgba(255,255,255,0.75);
+  --text-primary:  #1C1916;
+  --text-secondary:#7A746E;
+  --text-tertiary: #A49E98;
+  --accent:        #E8593A;
+  --accent-light:  rgba(232,89,58,0.12);
+  --accent-dark:   #C44528;
+  --border:        rgba(0,0,0,0.08);
+  --border-strong: rgba(0,0,0,0.14);
+  --shadow-sm:     0 1px 4px rgba(0,0,0,0.06);
+  --shadow-md:     0 4px 16px rgba(0,0,0,0.10);
+  --shadow-lg:     0 12px 40px rgba(0,0,0,0.14);
+  --shadow-xl:     0 24px 64px rgba(0,0,0,0.20);
+
+  /* Animation Tokens */
+  --ease-standard:  cubic-bezier(0.4, 0.0, 0.2, 1);
+  --ease-page-turn: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring:    cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-instant:    120ms;
+  --dur-fast:       200ms;
+  --dur-medium:     400ms;
+  --dur-hero:       800ms;
+  --dur-cover:      1200ms;
+
+  /* Typography */
+  --font-sans:   'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-serif:  'Playfair Display', Georgia, 'Times New Roman', serif;
+
+  /* Layout */
+  --phone-w:     393px;
+  --phone-h:     852px;
+  --radius-sm:   8px;
+  --radius-md:   14px;
+  --radius-lg:   22px;
+  --radius-xl:   32px;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:            #1E1C19;
+    --bg-alt:        #272420;
+    --surface:       #2C2925;
+    --surface-dim:   rgba(44,41,37,0.85);
+    --text-primary:  #F0EDE8;
+    --text-secondary:#A39D97;
+    --text-tertiary: #6E6862;
+    --border:        rgba(255,255,255,0.07);
+    --border-strong: rgba(255,255,255,0.12);
+    --shadow-sm:     0 1px 4px rgba(0,0,0,0.3);
+    --shadow-md:     0 4px 16px rgba(0,0,0,0.4);
+    --shadow-lg:     0 12px 40px rgba(0,0,0,0.5);
+    --shadow-xl:     0 24px 64px rgba(0,0,0,0.6);
+  }
+}
+
+/* ===========================
+   RESET & BASE
+   =========================== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  font-family: var(--font-sans);
+  background: #2A2722;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+}
+
+button { font-family: var(--font-sans); cursor: pointer; border: none; background: none; }
+input, textarea { font-family: var(--font-sans); }
+
+/* ===========================
+   MOBILE MOCKUP SHELL
+   =========================== */
+#root {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(232,89,58,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse at 70% 80%, rgba(100,80,60,0.08) 0%, transparent 60%),
+    #2A2722;
+}
+
+.phone-shell {
+  width:  var(--phone-w);
+  height: var(--phone-h);
+  border-radius: 48px;
+  background: #111;
+  box-shadow:
+    0 0 0 1.5px #3A3530,
+    0 0 0 3px #1A1612,
+    0 40px 100px rgba(0,0,0,0.7),
+    inset 0 0 0 1px rgba(255,255,255,0.06);
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+}
+
+/* Notch / Dynamic island */
+.phone-shell::before {
+  content: '';
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 126px;
+  height: 34px;
+  background: #0A0908;
+  border-radius: 20px;
+  z-index: 9999;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+}
+
+/* Side buttons */
+.phone-shell::after {
+  content: '';
+  position: absolute;
+  right: -4px;
+  top: 160px;
+  width: 4px;
+  height: 72px;
+  background: #3A3530;
+  border-radius: 0 3px 3px 0;
+  box-shadow: 0 90px 0 #3A3530, 0 -90px 0 #3A3530;
+}
+
+/* App viewport inside phone */
+.app-viewport {
+  width: 100%;
+  height: 100%;
+  background: var(--bg);
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border-radius: 48px;
+}
+
+/* Status bar spacer */
+.status-bar {
+  height: 58px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 0 28px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* ===========================
+   UTILITIES
+   =========================== */
+.flex-center { display: flex; align-items: center; justify-content: center; }
+.full { position: absolute; inset: 0; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }

@@ -1,0 +1,245 @@
+.today-wrap {
+  position: absolute;
+  inset: 0;
+  padding: 12px 22px 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Header */
+.today-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-top: 4px;
+}
+
+.today-dayname {
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.today-date {
+  font-family: var(--font-serif);
+  font-size: 30px;
+  font-weight: 500;
+  letter-spacing: -0.5px;
+  color: var(--text-primary);
+  line-height: 1.15;
+}
+
+.today-book-mini {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.mini-book-visual {
+  width: 28px;
+  height: 36px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 3px 5px 5px 3px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.mini-book-cover {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 0%, var(--accent-light) 100%);
+}
+
+.mini-pages {
+  background: var(--accent);
+  width: 100%;
+  transition: height 0.6s var(--ease-standard);
+  border-radius: 0 0 2px 0;
+}
+
+.mini-book-label {
+  font-size: 9px;
+  color: var(--text-secondary);
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+/* Prompt */
+.today-prompt {
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-style: italic;
+  font-family: var(--font-serif);
+}
+
+/* Hero card empty */
+.hero-card-empty {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: var(--shadow-md);
+  text-align: left;
+  width: 100%;
+}
+
+.hero-slots-preview {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.hero-slot-dot {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1.5px dashed var(--border-strong);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.hero-slot-dot span {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+}
+
+.hero-card-text h2 {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+.hero-card-text p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 3px;
+}
+
+.hero-book-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.prog-bar-track {
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.prog-bar-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+}
+.hero-book-progress > span {
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+/* Hero card filled */
+.hero-card-filled {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: var(--shadow-sm);
+}
+
+.hero-card-filled-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.hero-card-filled-header h2 {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  font-weight: 500;
+}
+.edit-btn {
+  font-size: 13px;
+  color: var(--accent);
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 20px;
+  background: var(--accent-light);
+}
+
+.filled-entries {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.filled-entry {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: var(--bg-alt);
+  border-radius: 10px;
+}
+.entry-num {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent);
+  width: 16px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.entry-text {
+  font-size: 13px;
+  flex: 1;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.entry-cat-badge {
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+/* On This Day */
+.section-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  margin-bottom: 8px;
+}
+.on-this-day-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+}
+.otd-year {
+  font-size: 11px;
+  color: var(--accent);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+.otd-text {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
