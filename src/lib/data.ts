@@ -1,33 +1,50 @@
+import {
+  Coffee, Plane, Users, Briefcase, Activity,
+  BookOpen, Home, Heart, Sparkles,
+  type LucideIcon,
+} from 'lucide-react';
+
+export type CategoryId =
+  'food' | 'travel' | 'people' | 'work' | 'health' |
+  'learning' | 'home' | 'love' | 'other';
+
+export interface Category {
+  id:    CategoryId;
+  label: string;
+  Icon:  LucideIcon;
+  color: string; // accent tint for active state
+}
+
+export const CATEGORIES: Category[] = [
+  { id: 'food',     label: 'Food',   Icon: Coffee,    color: '#C47B3A' },
+  { id: 'travel',   label: 'Travel', Icon: Plane,     color: '#3A7EC4' },
+  { id: 'people',   label: 'People', Icon: Users,     color: '#7C3AC4' },
+  { id: 'work',     label: 'Work',   Icon: Briefcase, color: '#3AC47C' },
+  { id: 'health',   label: 'Health', Icon: Activity,  color: '#E8593A' },
+  { id: 'learning', label: 'Learn',  Icon: BookOpen,  color: '#C43A6F' },
+  { id: 'home',     label: 'Home',   Icon: Home,      color: '#3ABDC4' },
+  { id: 'love',     label: 'Love',   Icon: Heart,     color: '#E83A7A' },
+  { id: 'other',    label: 'Other',  Icon: Sparkles,  color: '#A0A0A0' },
+];
+
 export type Entry = {
-  id: string;
-  text: string;
-  category?: string;
-  photo?: string;
+  id:        string;
+  text:      string;
+  category?: CategoryId;
+  photo?:    string;
 };
 
 export type DayLog = {
-  date: string; // "YYYY-MM-DD"
+  date:    string;  // "YYYY-MM-DD"
   entries: Entry[];
-  extras: Entry[];
+  extras:  Entry[];
 };
 
 export type Book = {
-  monthKey: string; // "YYYY-MM"
-  locked: boolean;
-  days: DayLog[];
+  monthKey: string;  // "YYYY-MM"
+  locked:   boolean;
+  days:     DayLog[];
 };
-
-export const CATEGORIES = [
-  { id: 'food',     label: 'Food',    emoji: '☕' },
-  { id: 'travel',   label: 'Travel',  emoji: '✈️' },
-  { id: 'people',   label: 'People',  emoji: '👥' },
-  { id: 'work',     label: 'Work',    emoji: '💼' },
-  { id: 'health',   label: 'Health',  emoji: '🩹' },
-  { id: 'learning', label: 'Learn',   emoji: '📖' },
-  { id: 'home',     label: 'Home',    emoji: '🏠' },
-  { id: 'love',     label: 'Love',    emoji: '❤️' },
-  { id: 'other',    label: 'Other',   emoji: '✦'  },
-];
 
 export function todayKey(): string {
   return new Date().toISOString().split('T')[0];
@@ -54,9 +71,8 @@ export function uid(): string {
 
 // ---- LocalStorage helpers ----
 export function getBooks(): Book[] {
-  try {
-    return JSON.parse(localStorage.getItem('daily5_books') || '[]');
-  } catch { return []; }
+  try { return JSON.parse(localStorage.getItem('daily5_books') || '[]'); }
+  catch { return []; }
 }
 
 export function saveBooks(books: Book[]) {
@@ -64,9 +80,9 @@ export function saveBooks(books: Book[]) {
 }
 
 export function getCurrentBook(): Book {
-  const mk = monthKey(todayKey());
-  let books = getBooks();
-  let book = books.find(b => b.monthKey === mk);
+  const mk    = monthKey(todayKey());
+  const books = getBooks();
+  let book    = books.find(b => b.monthKey === mk);
   if (!book) {
     book = { monthKey: mk, locked: false, days: [] };
     books.push(book);
@@ -76,9 +92,9 @@ export function getCurrentBook(): Book {
 }
 
 export function upsertDay(day: DayLog) {
-  const mk = monthKey(day.date);
-  let books = getBooks();
-  let book = books.find(b => b.monthKey === mk);
+  const mk    = monthKey(day.date);
+  const books = getBooks();
+  let book    = books.find(b => b.monthKey === mk);
   if (!book) {
     book = { monthKey: mk, locked: false, days: [] };
     books.push(book);
@@ -90,14 +106,18 @@ export function upsertDay(day: DayLog) {
 }
 
 export function getDay(date: string): DayLog | null {
-  const mk = monthKey(date);
+  const mk    = monthKey(date);
   const books = getBooks();
-  const book = books.find(b => b.monthKey === mk);
+  const book  = books.find(b => b.monthKey === mk);
   return book?.days.find(d => d.date === date) || null;
 }
 
 export function lockBook(mk: string) {
   const books = getBooks();
-  const book = books.find(b => b.monthKey === mk);
+  const book  = books.find(b => b.monthKey === mk);
   if (book) { book.locked = true; saveBooks(books); }
+}
+
+export function getCategoryById(id?: string): Category | undefined {
+  return CATEGORIES.find(c => c.id === id);
 }

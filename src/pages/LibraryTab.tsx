@@ -1,14 +1,18 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { BookMarked, Coffee, Plane, Heart, BookOpen } from 'lucide-react';
 import { getBooks, formatMonthYear, lockBook, type Book } from '../lib/data';
 import { BookViewer } from '../components/BookViewer';
 import './LibraryTab.css';
 
+const COVER_ICONS = [Coffee, Plane, Heart, BookOpen] as const;
+
 export function LibraryTab() {
-  const [books, setBooks]     = useState<Book[]>(getBooks);
+  const [books, setBooks]   = useState<Book[]>(getBooks);
   const [viewing, setViewing] = useState<Book | null>(null);
 
-  const handleLockDemo = (mk: string) => {
+  const handleLock = (mk: string, e: React.MouseEvent) => {
+    e.stopPropagation();
     lockBook(mk);
     setBooks(getBooks());
   };
@@ -29,14 +33,16 @@ export function LibraryTab() {
 
         {books.length === 0 ? (
           <div className="library-empty">
-            <div className="library-empty-icon">📚</div>
+            <div className="library-empty-icon">
+              <BookMarked size={52} strokeWidth={1} color="var(--accent)" style={{ opacity: 0.5 }} />
+            </div>
             <h3>Your first book is forming</h3>
             <p>Log your moments every day. At the end of the month, your first book will appear here.</p>
           </div>
         ) : (
           <div className="shelf">
             {books.map((book, i) => {
-              const label   = formatMonthYear(book.monthKey);
+              const label = formatMonthYear(book.monthKey);
               const daysLogged = book.days.filter(d => d.entries.length > 0).length;
               const [y, m] = book.monthKey.split('-').map(Number);
               const totalDays = new Date(y, m, 0).getDate();
@@ -50,22 +56,24 @@ export function LibraryTab() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.06 }}
                   onClick={() => setViewing(book)}
-                  whileHover={{ y: -4 }}
+                  whileHover={{ y: -3 }}
                   whileTap={{ scale: 0.97 }}
                 >
                   <div className="book-cover-3d">
                     <div className="book-cover-face">
                       <span className="book-cover-month">{label.split(' ')[0]}</span>
                       <span className="book-cover-year">{label.split(' ')[1]}</span>
+                      {/* Lucide icon grid on cover */}
                       <div className="book-cover-icons">
-                        {['☕','✈️','❤️','📖'].slice(0, 4).map((ic, ii) => (
-                          <span key={ii}>{ic}</span>
+                        {COVER_ICONS.map((Icon, ii) => (
+                          <Icon key={ii} size={10} strokeWidth={1.5} color="rgba(255,255,255,0.75)" />
                         ))}
                       </div>
                     </div>
                     <div className="book-spine-3d" />
                     <div className="book-pages-3d" />
                   </div>
+
                   <div className="book-meta">
                     <p className="book-meta-label">{label}</p>
                     {book.locked ? (
@@ -79,10 +87,11 @@ export function LibraryTab() {
                       </>
                     )}
                   </div>
+
                   {!book.locked && (
                     <button
                       className="lock-now-btn"
-                      onClick={e => { e.stopPropagation(); handleLockDemo(book.monthKey); }}
+                      onClick={e => handleLock(book.monthKey, e)}
                     >
                       Close Book
                     </button>
