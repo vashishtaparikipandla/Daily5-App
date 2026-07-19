@@ -124,9 +124,9 @@ export function getCategoryById(id?: string): Category | undefined {
 
 export function seedDemoDataIfNeeded() {
   const seedVersion = localStorage.getItem('daily5_seed_version');
-  if (seedVersion !== '2') {
+  if (seedVersion !== '3') {
     localStorage.removeItem('daily5_books');
-    localStorage.setItem('daily5_seed_version', '2');
+    localStorage.setItem('daily5_seed_version', '3');
   } else {
     if (getBooks().length > 0) return;
   }

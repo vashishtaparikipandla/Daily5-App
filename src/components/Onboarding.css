@@ -194,3 +194,167 @@
   font-weight: 500;
   letter-spacing: 0.1px;
 }
+
+/* Pre-Onboarding Screens */
+.pre-ob-screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  text-align: center;
+  background: var(--bg);
+}
+
+.pre-ob-title {
+  font-family: var(--font-serif);
+  font-size: 32px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+  line-height: 1.2;
+}
+
+.pre-ob-sub {
+  font-size: 16px;
+  color: var(--text-secondary);
+  margin-bottom: 40px;
+}
+
+.pre-ob-date {
+  font-size: 24px;
+  padding: 12px 20px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text-primary);
+  margin-bottom: 40px;
+}
+
+.pre-ob-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--accent);
+  color: #fff;
+  padding: 16px 32px;
+  border-radius: 30px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+}
+.pre-ob-btn:disabled {
+  opacity: 0.5;
+}
+
+.pre-ob-back {
+  position: absolute;
+  top: 40px;
+  left: 20px;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  padding: 8px;
+}
+
+.pre-ob-scale {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.scale-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 24px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  color: var(--text-primary);
+  font-size: 18px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.scale-btn.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.pre-ob-reflection {
+  font-size: 16px;
+  color: var(--text-secondary);
+  font-style: italic;
+  margin-bottom: 40px;
+  min-height: 24px;
+}
+
+/* Reveal Screen */
+.pre-ob-reveal {
+  padding: 0;
+  overflow: hidden;
+  background: #111;
+}
+
+.reveal-dots-container {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.reveal-dots-grid {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 3px;
+  width: 100%;
+  max-width: 400px;
+  height: 100%;
+  padding-top: 40px;
+}
+
+.reveal-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255,255,255,0.1);
+}
+.reveal-dot.lived {
+  background: var(--accent);
+}
+
+.reveal-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, #111 20%, rgba(17,17,17,0.7) 60%, transparent);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 40px 20px 80px;
+  text-align: center;
+}
+
+.reveal-title {
+  font-family: var(--font-serif);
+  font-size: 32px;
+  color: #fff;
+  margin-bottom: 16px;
+}
+
+.reveal-sub {
+  font-size: 18px;
+  color: rgba(255,255,255,0.8);
+  margin-bottom: 12px;
+}
+.reveal-sub:last-of-type {
+  margin-bottom: 40px;
+}

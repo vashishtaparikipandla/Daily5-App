@@ -29,6 +29,39 @@ export function BookViewer({ book, onClose }: BookViewerProps) {
     if (dir === 'prev' && hasPrev) setPageIdx(p => p - 1);
   };
 
+  const [focusedPhoto, setFocusedPhoto] = useState<{ entryId: string; photoIdx: number } | null>(null);
+
+  // Helper for Focus Mode swiping
+  const getNextPhoto = () => {
+    // Collect all photos in current day
+    const allPhotos: { entryId: string; url: string; idx: number }[] = [];
+    currentDay.entries.forEach(e => {
+      if (e?.photos) {
+        e.photos.forEach((url, i) => allPhotos.push({ entryId: e.id, url, idx: i }));
+      }
+    });
+    if (!focusedPhoto) return null;
+    const currIdx = allPhotos.findIndex(p => p.entryId === focusedPhoto.entryId && p.idx === focusedPhoto.photoIdx);
+    if (currIdx < allPhotos.length - 1) {
+      return { entryId: allPhotos[currIdx + 1].entryId, photoIdx: allPhotos[currIdx + 1].idx };
+    }
+    return null; // For simplicity, just swipe within the day.
+  };
+
+  const swipeNextPhoto = () => {
+    const next = getNextPhoto();
+    if (next) setFocusedPhoto(next);
+  };
+
+  // Find last filled entry index for the extras badge
+  let lastFilledIndex = -1;
+  for (let i = 4; i >= 0; i--) {
+    if (currentDay.entries[i]) {
+      lastFilledIndex = i;
+      break;
+    }
+  }
+
   return (
     <motion.div
       className="viewer-overlay"
@@ -140,39 +173,56 @@ export function BookViewer({ book, onClose }: BookViewerProps) {
                             const e = currentDay.entries[i];
                             if (e) {
                               const cat = getCategoryById(e.category);
+                              // deterministic rotation based on string length and index
+                              const rot = ((e.text.length + i) % 9) - 4; 
+                              
                               return (
                                 <motion.div
                                   key={e.id}
-                                  className="page-entry page-entry-fixed"
+                                  className="scrapbook-card"
                                   initial={{ opacity: 0, y: 8 }}
                                   animate={{ opacity: 1, y: 0 }}
                                   transition={{ delay: i * 0.05 }}
+                                  style={{ transform: `rotate(${rot}deg)` }}
                                 >
-                                  <div className="page-entry-num">{i + 1}</div>
-                                  <div className="page-entry-body">
+                                  <div className="scrapbook-tape"></div>
+                                  
+                                  {e.photos && e.photos.length > 0 && (
+                                    <div className="scrapbook-photos">
+                                      {e.photos.map((url, idx) => (
+                                        <img 
+                                          key={idx} 
+                                          src={url} 
+                                          alt="Memory" 
+                                          className={`scrapbook-photo ${e.photos!.length === 2 ? (idx === 0 ? 'fan-left' : 'fan-right') : ''}`}
+                                          onClick={() => setFocusedPhoto({ entryId: e.id, photoIdx: idx })}
+                                        />
+                                      ))}
+                                    </div>
+                                  )}
+                                  
+                                  <div className="scrapbook-caption-area">
+                                    <p className="scrapbook-caption">{e.text}</p>
                                     {cat && (
-                                      <div className="page-entry-cat" style={{ color: cat.color }}>
-                                        <cat.Icon size={13} strokeWidth={2} />
-                                        <span>{cat.label}</span>
+                                      <div className="scrapbook-cat-icon" style={{ color: cat.color }}>
+                                        <cat.Icon size={14} strokeWidth={2.5} />
                                       </div>
                                     )}
-                                    <p className="page-entry-text">{e.text}</p>
                                   </div>
-                                  {e.photos && e.photos.length > 0 && (
-                                    <div className="page-entry-photos">
-                                      {e.photos.map((url, idx) => (
-                                        <img key={idx} src={url} alt="Memory" className="page-entry-photo" />
-                                      ))}
+
+                                  {/* Extras badge on the last card */}
+                                  {hasExtras && i === lastFilledIndex && (
+                                    <div className="scrapbook-extras-badge">
+                                      +{currentDay.extras.length} extra
                                     </div>
                                   )}
                                 </motion.div>
                               );
                             } else {
                               return (
-                                <div key={`empty-${i}`} className="page-entry page-entry-fixed empty-slot">
-                                  <div className="page-entry-num empty-num">{i + 1}</div>
-                                  <div className="page-entry-body">
-                                    <span className="empty-slot-dash">—</span>
+                                <div key={`empty-${i}`} className="scrapbook-card-empty">
+                                  <div className="scrapbook-empty-frame">
+                                    <span className="scrapbook-empty-dash">—</span>
                                   </div>
                                 </div>
                               );
@@ -237,6 +287,45 @@ export function BookViewer({ book, onClose }: BookViewerProps) {
           </div>
         </div>
       )}
+
+      {/* Focus Mode Overlay */}
+      <AnimatePresence>
+        {focusedPhoto && (
+          <motion.div
+            className="focus-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setFocusedPhoto(null)}
+          >
+            <button className="focus-close">
+              <X size={24} color="#fff" />
+            </button>
+            
+            {(() => {
+              const e = currentDay.entries.find(e => e?.id === focusedPhoto.entryId);
+              const url = e?.photos?.[focusedPhoto.photoIdx];
+              return (
+                <div className="focus-content" onClick={e => e.stopPropagation()}>
+                  <motion.img 
+                    src={url} 
+                    alt="Focus" 
+                    className="focus-img" 
+                    drag="x"
+                    dragConstraints={{ left: 0, right: 0 }}
+                    onDragEnd={(_, info) => {
+                      if (info.offset.x < -50) swipeNextPhoto();
+                    }}
+                  />
+                  <div className="focus-caption-scrim">
+                    <p className="focus-caption">{e?.text}</p>
+                  </div>
+                </div>
+              );
+            })()}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

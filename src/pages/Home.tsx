@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
-  Calendar, BookMarked, Compass, User, Plus,
+  Calendar, BookMarked, User, Plus,
 } from 'lucide-react';
 import { TodayTab }   from './TodayTab';
 import { LibraryTab } from './LibraryTab';
-import { ExtrasTab }  from './ExtrasTab';
 import { ProfileTab } from './ProfileTab';
 import { LoggingModal } from '../components/LoggingModal';
 import './Home.css';
@@ -15,7 +14,6 @@ export type TabId = 'today' | 'library' | 'extras' | 'profile';
 const TABS: { id: TabId; Icon: React.ElementType; label: string }[] = [
   { id: 'today',   Icon: Calendar,   label: 'Today'   },
   { id: 'library', Icon: BookMarked, label: 'Library' },
-  { id: 'extras',  Icon: Compass,    label: 'Discover'},
   { id: 'profile', Icon: User,       label: 'Profile' },
 ];
 
@@ -57,7 +55,6 @@ export function Home() {
         <AnimatePresence mode="wait">
           {tab === 'today'   && <TodayTab   key="today"   onLog={() => setLogging(true)} refresh={refresh} />}
           {tab === 'library' && <LibraryTab key="library" />}
-          {tab === 'extras'  && <ExtrasTab  key="extras"  />}
           {tab === 'profile' && <ProfileTab key="profile" />}
         </AnimatePresence>
       </div>
@@ -89,7 +86,7 @@ export function Home() {
           </motion.button>
         </div>
 
-        {TABS.slice(2, 4).map(t => {
+        {TABS.slice(2, 3).map(t => {
           const isActive  = tab === t.id;
           return (
             <button

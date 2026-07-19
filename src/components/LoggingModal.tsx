@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Check, ArrowLeft, Camera } from 'lucide-react';
+import { X, Check, ArrowLeft, Camera, Mic } from 'lucide-react';
 import { CATEGORIES, getDay, upsertDay, todayKey, uid, type Entry, type CategoryId } from '../lib/data';
 import './LoggingModal.css';
 
@@ -35,6 +35,7 @@ export function LoggingModal({ onClose, onSaved }: LoggingModalProps) {
   const [photos, setPhotos]     = useState<string[]>([]);
   const [flippedSlots, setFlippedSlots] = useState<Set<number>>(new Set());
   const [showPageAnim, setShowPageAnim] = useState(false);
+  const [isListening, setIsListening]   = useState(false);
 
   const placeholder = PLACEHOLDERS[new Date().getSeconds() % PLACEHOLDERS.length];
   const slots       = [0, 1, 2, 3, 4];
@@ -67,6 +68,14 @@ export function LoggingModal({ onClose, onSaved }: LoggingModalProps) {
     setText('');
     setCategory('');
     setPhotos([]);
+  };
+
+  const startListening = () => {
+    setIsListening(true);
+    setTimeout(() => {
+      setIsListening(false);
+      setText(prev => (prev + (prev ? ' ' : '') + 'I was super exhausted today but finally finished reading that novel before bed.').slice(0, 130));
+    }, 2000);
   };
 
   const done = () => {
@@ -228,8 +237,9 @@ export function LoggingModal({ onClose, onSaved }: LoggingModalProps) {
                     className="compose-textarea"
                     autoFocus
                     maxLength={130}
-                    placeholder={placeholder}
+                    placeholder={isListening ? 'Listening...' : placeholder}
                     value={text}
+                    disabled={isListening}
                     onChange={e => setText(e.target.value)}
                   />
                   <div className={`char-counter ${text.length > 110 ? (text.length >= 130 ? 'limit-reached' : 'limit-near') : ''}`}>
@@ -271,6 +281,15 @@ export function LoggingModal({ onClose, onSaved }: LoggingModalProps) {
                       <span className="add-photo-icon"><Camera size={24} strokeWidth={1.5} color="var(--text-secondary)" /></span>
                     </motion.label>
                   )}
+                  <motion.button
+                    className={`compose-mic-btn ${isListening ? 'listening' : ''}`}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={startListening}
+                    disabled={isListening}
+                    title="Voice Log"
+                  >
+                    <Mic size={24} strokeWidth={1.5} color={isListening ? "var(--error)" : "var(--text-secondary)"} />
+                  </motion.button>
                 </div>
 
                 {/* Category row */}
