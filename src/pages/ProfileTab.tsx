@@ -1,17 +1,9 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
-  Bell, Palette, Shield, Download, Printer,
-  Gift, LogOut, ChevronRight, User,
+  Bell, Palette, Shield, LogOut, ChevronRight, User,
 } from 'lucide-react';
 import './ProfileTab.css';
-
-const SETTINGS = [
-  { Icon: Bell,     label: 'Notifications', sub: '9:00 PM daily reminder'  },
-  { Icon: Palette,  label: 'Appearance',    sub: 'Auto (follows system)'   },
-  { Icon: Shield,   label: 'Privacy',       sub: 'End-to-end encrypted'    },
-  { Icon: Download, label: 'Export data',   sub: 'Download all entries'    },
-  { Icon: Printer,  label: 'Print orders',  sub: 'View order history'      },
-];
 
 export function ProfileTab() {
   const [sub, setSub] = useState<'main' | 'edit' | 'notifications' | 'appearance' | 'privacy'>('main');
