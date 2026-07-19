@@ -123,28 +123,51 @@ export function getCategoryById(id?: string): Category | undefined {
 }
 
 export function seedDemoDataIfNeeded() {
-  if (getBooks().length > 0) return;
+  const seedVersion = localStorage.getItem('daily5_seed_version');
+  if (seedVersion !== '2') {
+    localStorage.removeItem('daily5_books');
+    localStorage.setItem('daily5_seed_version', '2');
+  } else {
+    if (getBooks().length > 0) return;
+  }
   const books: Book[] = [];
   const now = new Date();
   
   const sampleTexts = [
-    { cat: 'food', text: 'Tried a new recipe for dinner and it was amazing.' },
-    { cat: 'health', text: 'Went for a 5k run in the park.' },
-    { cat: 'learning', text: 'Read a few chapters of a new book.' },
-    { cat: 'people', text: 'Caught up with an old friend over coffee.' },
-    { cat: 'work', text: 'Finally finished that big project at work.' },
-    { cat: 'home', text: 'Cleaned the entire apartment.' },
-    { cat: 'travel', text: 'Took a day trip out to the coast.' },
-    { cat: 'love', text: 'Had a wonderful date night.' },
-    { cat: 'other', text: 'Just relaxed and did absolutely nothing.' },
+    { cat: 'food', text: 'Had the most incredible truffle pasta at that hidden spot downtown.' },
+    { cat: 'food', text: 'Brewed a perfect pour-over coffee this morning, the beans from Colombia are amazing.' },
+    { cat: 'food', text: 'Tried making sourdough bread for the first time. It actually rose properly!' },
+    { cat: 'health', text: 'Crushed a 10k run by the river, feeling exhausted but accomplished.' },
+    { cat: 'health', text: 'Finally managed to hold a handstand for more than 5 seconds in yoga class.' },
+    { cat: 'learning', text: 'Read the first 50 pages of the new sci-fi novel. Absolutely hooked.' },
+    { cat: 'learning', text: 'Watched a documentary about deep sea exploration. Mind-blowing stuff.' },
+    { cat: 'people', text: 'Caught up with Sarah over matcha lattes. It\'s been way too long.' },
+    { cat: 'people', text: 'Family dinner was loud and chaotic in the best way possible.' },
+    { cat: 'work', text: 'Nailed the presentation today. The team seemed really impressed.' },
+    { cat: 'work', text: 'Cleared out my inbox completely. Inbox zero is a myth no longer.' },
+    { cat: 'home', text: 'Spent the afternoon repotting all my monstera plants.' },
+    { cat: 'home', text: 'Rearranged the living room. It feels like a completely new space.' },
+    { cat: 'travel', text: 'Wandered around the historic district and found a tiny indie bookstore.' },
+    { cat: 'travel', text: 'The sunset view from the scenic overlook was worth the 2 hour drive.' },
+    { cat: 'love', text: 'Surprise date night at the observatory. Seeing Saturn\'s rings was surreal.' },
+    { cat: 'love', text: 'Left a little sticky note on the mirror and it made their whole day.' },
+    { cat: 'other', text: 'Sat on the balcony and just watched the rain for an hour.' },
+    { cat: 'other', text: 'Found a $20 bill inside an old winter coat. Score!' },
   ];
 
   const getPhotos = (cat: string) => {
+    // 50% chance to have photos
     if (Math.random() > 0.5) return undefined;
-    const numPhotos = Math.random() > 0.5 ? 2 : 1;
+    const numPhotos = Math.random() > 0.3 ? 1 : 2;
     const urls = [];
+    const themes = {
+      'food': 'food,cafe', 'health': 'fitness,nature', 'learning': 'book,library',
+      'people': 'friends,people', 'work': 'office,desk', 'home': 'interior,plants',
+      'travel': 'landscape,architecture', 'love': 'couple,romantic', 'other': 'abstract,texture'
+    };
+    const theme = themes[cat as keyof typeof themes] || 'nature';
     for (let i = 0; i < numPhotos; i++) {
-      urls.push(`https://source.unsplash.com/random/400x400?${cat},sig=${Math.random()}`);
+      urls.push(`https://source.unsplash.com/random/400x400?${theme}&sig=${Math.random()}`);
     }
     return urls;
   };
@@ -154,13 +177,14 @@ export function seedDemoDataIfNeeded() {
     const days: DayLog[] = [];
     const daysInMonth = new Date(y, mo + 1, 0).getDate();
     
-    // Fill ~80-90% of the days
     for (let day = 1; day <= daysInMonth; day++) {
-       if (Math.random() > 0.85) continue; // skip some days
+       // Almost all days are filled
+       if (Math.random() > 0.95) continue; 
 
        const dayStr = `${mk}-${String(day).padStart(2, '0')}`;
        const entries: Entry[] = [];
-       const count = Math.floor(Math.random() * 5) + 1; // 1 to 5 entries
+       // Force exactly 5 entries for past days
+       const count = 5; 
        for (let i=0; i<count; i++) {
          const t = sampleTexts[Math.floor(Math.random() * sampleTexts.length)];
          entries.push({
@@ -172,22 +196,17 @@ export function seedDemoDataIfNeeded() {
        }
        
        const extras: Entry[] = [];
-       if (count === 5 && Math.random() > 0.8) {
-         extras.push({ id: uid(), text: 'Bonus: Saw a shooting star!', category: 'other' });
-         if (Math.random() > 0.5) extras.push({ id: uid(), text: 'Extra thought.', category: 'other' });
+       if (Math.random() > 0.8) {
+         extras.push({ id: uid(), text: 'Bonus: Found a great new podcast today.', category: 'other' });
        }
 
-       days.push({
-         date: dayStr,
-         entries,
-         extras
-       });
+       days.push({ date: dayStr, entries, extras });
     }
     return { monthKey: mk, locked: isLocked, days };
   };
 
-  // Generate 3 past locked months
-  for (let m = 3; m >= 1; m--) {
+  // Generate 4 past locked months
+  for (let m = 4; m >= 1; m--) {
     let y = now.getFullYear();
     let mo = now.getMonth() - m;
     if (mo < 0) { mo += 12; y -= 1; }
@@ -197,20 +216,29 @@ export function seedDemoDataIfNeeded() {
   // Prior Year Data (Same month last year)
   books.push(generateMonth(now.getFullYear() - 1, now.getMonth(), true));
 
-  // Current (Unlocked) Month (partial fill up to today)
+  // Current (Unlocked) Month (partial fill up to yesterday)
   const currentMk = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
   const currentDays: DayLog[] = [];
   for (let day = 1; day <= now.getDate() - 1; day++) {
-       if (Math.random() > 0.8) continue;
+       if (Math.random() > 0.9) continue;
        const dayStr = `${currentMk}-${String(day).padStart(2, '0')}`;
        const entries: Entry[] = [];
-       const count = Math.floor(Math.random() * 5) + 1;
-       for (let i=0; i<count; i++) {
+       for (let i=0; i<5; i++) {
          const t = sampleTexts[Math.floor(Math.random() * sampleTexts.length)];
          entries.push({ id: uid(), text: t.text, category: t.cat as CategoryId, photos: getPhotos(t.cat) });
        }
        currentDays.push({ date: dayStr, entries, extras: [] });
   }
+
+  // Pre-fill today with exactly 3 moments
+  const todayStr = `${currentMk}-${String(now.getDate()).padStart(2, '0')}`;
+  const todayEntries: Entry[] = [];
+  for (let i=0; i<3; i++) {
+    const t = sampleTexts[Math.floor(Math.random() * sampleTexts.length)];
+    todayEntries.push({ id: uid(), text: t.text, category: t.cat as CategoryId, photos: getPhotos(t.cat) });
+  }
+  currentDays.push({ date: todayStr, entries: todayEntries, extras: [] });
+
   books.push({ monthKey: currentMk, locked: false, days: currentDays });
 
   saveBooks(books);

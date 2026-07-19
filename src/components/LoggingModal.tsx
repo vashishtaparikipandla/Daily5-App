@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Check, ArrowLeft } from 'lucide-react';
+import { X, Check, ArrowLeft, Camera } from 'lucide-react';
 import { CATEGORIES, getDay, upsertDay, todayKey, uid, type Entry, type CategoryId } from '../lib/data';
 import './LoggingModal.css';
 
@@ -268,7 +268,7 @@ export function LoggingModal({ onClose, onSaved }: LoggingModalProps) {
                           setPhotos([...photos, `https://source.unsplash.com/random/400x400?sig=${Math.random()}`]);
                         }
                       }} />
-                      <span className="add-photo-icon">📸</span>
+                      <span className="add-photo-icon"><Camera size={24} strokeWidth={1.5} color="var(--text-secondary)" /></span>
                     </motion.label>
                   )}
                 </div>

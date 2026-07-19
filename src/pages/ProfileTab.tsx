@@ -64,7 +64,7 @@ export function ProfileTab() {
             <div className="auth-fields">
               <div className="field-group">
                 <label className="field-label">Display Name</label>
-                <input className="field-input" defaultValue="Daily 5 User" />
+                <input className="field-input" defaultValue="Vashishta" />
               </div>
               <div className="field-group">
                 <label className="field-label">Email</label>
@@ -135,8 +135,8 @@ export function ProfileTab() {
         <div className="profile-avatar">
           <User size={28} strokeWidth={1.75} color="#fff" />
         </div>
-        <h2 className="profile-name">Daily 5 User</h2>
-        <p className="profile-email">yourname@email.com</p>
+        <h2 className="profile-name">Vashishta</h2>
+        <p className="profile-email">vashishta@email.com</p>
         <button className="edit-btn" onClick={() => setSub('edit')} style={{ marginTop: 8 }}>
           Edit Profile
         </button>
