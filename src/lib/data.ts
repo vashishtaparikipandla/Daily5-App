@@ -31,7 +31,7 @@ export type Entry = {
   id:        string;
   text:      string;
   category?: CategoryId;
-  photo?:    string;
+  photos?:   string[];
 };
 
 export type DayLog = {
@@ -139,19 +139,25 @@ export function seedDemoDataIfNeeded() {
     { cat: 'other', text: 'Just relaxed and did absolutely nothing.' },
   ];
 
-  // Generate 4 past locked months
-  for (let m = 4; m >= 1; m--) {
-    let y = now.getFullYear();
-    let mo = now.getMonth() - m;
-    if (mo < 0) {
-      mo += 12;
-      y -= 1;
+  const getPhotos = (cat: string) => {
+    if (Math.random() > 0.5) return undefined;
+    const numPhotos = Math.random() > 0.5 ? 2 : 1;
+    const urls = [];
+    for (let i = 0; i < numPhotos; i++) {
+      urls.push(`https://source.unsplash.com/random/400x400?${cat},sig=${Math.random()}`);
     }
+    return urls;
+  };
+
+  const generateMonth = (y: number, mo: number, isLocked: boolean) => {
     const mk = `${y}-${String(mo + 1).padStart(2, '0')}`;
     const days: DayLog[] = [];
+    const daysInMonth = new Date(y, mo + 1, 0).getDate();
     
-    // Pick 5 random days
-    for (let day = 5; day <= 25; day += 5) {
+    // Fill ~80-90% of the days
+    for (let day = 1; day <= daysInMonth; day++) {
+       if (Math.random() > 0.85) continue; // skip some days
+
        const dayStr = `${mk}-${String(day).padStart(2, '0')}`;
        const entries: Entry[] = [];
        const count = Math.floor(Math.random() * 5) + 1; // 1 to 5 entries
@@ -161,17 +167,51 @@ export function seedDemoDataIfNeeded() {
            id: uid(),
            text: t.text,
            category: t.cat as CategoryId,
+           photos: getPhotos(t.cat)
          });
        }
+       
+       const extras: Entry[] = [];
+       if (count === 5 && Math.random() > 0.8) {
+         extras.push({ id: uid(), text: 'Bonus: Saw a shooting star!', category: 'other' });
+         if (Math.random() > 0.5) extras.push({ id: uid(), text: 'Extra thought.', category: 'other' });
+       }
+
        days.push({
          date: dayStr,
          entries,
-         extras: count === 5 && Math.random() > 0.5 ? [{ id: uid(), text: 'Bonus: Saw a shooting star!', category: 'other' }] : []
+         extras
        });
     }
-    
-    books.push({ monthKey: mk, locked: true, days });
+    return { monthKey: mk, locked: isLocked, days };
+  };
+
+  // Generate 3 past locked months
+  for (let m = 3; m >= 1; m--) {
+    let y = now.getFullYear();
+    let mo = now.getMonth() - m;
+    if (mo < 0) { mo += 12; y -= 1; }
+    books.push(generateMonth(y, mo, true));
   }
   
+  // Prior Year Data (Same month last year)
+  books.push(generateMonth(now.getFullYear() - 1, now.getMonth(), true));
+
+  // Current (Unlocked) Month (partial fill up to today)
+  const currentMk = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  const currentDays: DayLog[] = [];
+  for (let day = 1; day <= now.getDate() - 1; day++) {
+       if (Math.random() > 0.8) continue;
+       const dayStr = `${currentMk}-${String(day).padStart(2, '0')}`;
+       const entries: Entry[] = [];
+       const count = Math.floor(Math.random() * 5) + 1;
+       for (let i=0; i<count; i++) {
+         const t = sampleTexts[Math.floor(Math.random() * sampleTexts.length)];
+         entries.push({ id: uid(), text: t.text, category: t.cat as CategoryId, photos: getPhotos(t.cat) });
+       }
+       currentDays.push({ date: dayStr, entries, extras: [] });
+  }
+  books.push({ monthKey: currentMk, locked: false, days: currentDays });
+
   saveBooks(books);
 }

@@ -32,6 +32,7 @@ export function LoggingModal({ onClose, onSaved }: LoggingModalProps) {
   const [activeSlot, setActiveSlot] = useState<number | null>(null);
   const [text, setText]         = useState('');
   const [category, setCategory] = useState<CategoryId | ''>('');
+  const [photos, setPhotos]     = useState<string[]>([]);
   const [flippedSlots, setFlippedSlots] = useState<Set<number>>(new Set());
   const [showPageAnim, setShowPageAnim] = useState(false);
 
@@ -42,17 +43,19 @@ export function LoggingModal({ onClose, onSaved }: LoggingModalProps) {
     setActiveSlot(i);
     setText(entries[i]?.text ?? '');
     setCategory((entries[i]?.category as CategoryId | '') ?? '');
+    setPhotos(entries[i]?.photos ?? []);
     setPhase('compose');
   };
 
   const saveSlot = () => {
     if (activeSlot === null) return;
     const newEntries = [...entries];
-    if (text.trim()) {
+    if (text.trim() || photos.length > 0) {
       newEntries[activeSlot] = {
         id:       entries[activeSlot]?.id ?? uid(),
         text:     text.trim(),
         category: category || undefined,
+        photos:   photos.length > 0 ? photos : undefined,
       };
       setFlippedSlots(prev => new Set(prev).add(activeSlot));
     } else {
@@ -63,6 +66,7 @@ export function LoggingModal({ onClose, onSaved }: LoggingModalProps) {
     setActiveSlot(null);
     setText('');
     setCategory('');
+    setPhotos([]);
   };
 
   const done = () => {
@@ -241,7 +245,35 @@ export function LoggingModal({ onClose, onSaved }: LoggingModalProps) {
                   </div>
                 )}
 
-                {/* Category & Media row */}
+                {/* Photos Row */}
+                <div className="compose-photos-row">
+                  {photos.map((url, idx) => (
+                    <div key={idx} className="compose-photo-tile">
+                      <img src={url} alt="Attached" className="compose-photo-img" />
+                      <button className="compose-photo-remove" onClick={() => {
+                        setPhotos(photos.filter((_, i) => i !== idx));
+                      }}>
+                        <X size={12} strokeWidth={3} />
+                      </button>
+                    </div>
+                  ))}
+                  {photos.length < 2 && (
+                    <motion.label
+                      className={`compose-photo-add ${photos.length > 0 ? 'small-add' : ''}`}
+                      whileTap={{ scale: 0.95 }}
+                      title="Add Photo"
+                    >
+                      <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => {
+                        if (e.target.files?.length && photos.length < 2) {
+                          setPhotos([...photos, `https://source.unsplash.com/random/400x400?sig=${Math.random()}`]);
+                        }
+                      }} />
+                      <span className="add-photo-icon">📸</span>
+                    </motion.label>
+                  )}
+                </div>
+
+                {/* Category row */}
                 <div className="category-row">
                   {CATEGORIES.map(c => {
                     const isActive = category === c.id;
@@ -262,19 +294,6 @@ export function LoggingModal({ onClose, onSaved }: LoggingModalProps) {
                       </motion.button>
                     );
                   })}
-                  <div className="cat-divider" />
-                  <motion.label
-                    className="cat-chip media-chip"
-                    whileTap={{ scale: 0.9 }}
-                    title="Add Photo"
-                  >
-                    <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => {
-                      if (e.target.files?.length) {
-                        alert('Photo attached (Mocked)');
-                      }
-                    }} />
-                    <span style={{ fontSize: 18 }}>📸</span>
-                  </motion.label>
                 </div>
 
                 <div className="compose-actions">

@@ -158,6 +158,13 @@ export function BookViewer({ book, onClose }: BookViewerProps) {
                                     )}
                                     <p className="page-entry-text">{e.text}</p>
                                   </div>
+                                  {e.photos && e.photos.length > 0 && (
+                                    <div className="page-entry-photos">
+                                      {e.photos.map((url, idx) => (
+                                        <img key={idx} src={url} alt="Memory" className="page-entry-photo" />
+                                      ))}
+                                    </div>
+                                  )}
                                 </motion.div>
                               );
                             } else {

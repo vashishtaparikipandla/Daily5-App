@@ -225,9 +225,27 @@
 }
 
 .page-entry-fixed {
-  flex: 1;
-  min-height: 70px; /* Ensures minimum height so they don't collapse */
-  align-items: center; /* Center vertically if content is short */
+  flex: none;
+  height: calc(20% - 8px); /* 5 slots, 4 gaps of 10px */
+  align-items: center; 
+  overflow: hidden;
+}
+
+.page-entry-photos {
+  display: flex;
+  gap: 4px;
+  margin-left: 6px;
+  height: 100%;
+  padding-block: 4px;
+  align-items: center;
+}
+
+.page-entry-photo {
+  width: 48px;
+  height: 48px;
+  border-radius: 6px;
+  object-fit: cover;
+  box-shadow: var(--shadow-sm);
 }
 
 .empty-slot {
