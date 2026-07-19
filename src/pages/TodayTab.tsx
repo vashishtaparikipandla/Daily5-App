@@ -22,11 +22,6 @@ export function TodayTab({ onLog, refresh: _refresh }: TodayTabProps) {
   const entries = dayLog?.entries ?? [];
   const daysLogged = book.days.filter(d => d.entries.length > 0).length;
   
-  const now = new Date();
-  const lastYearDate = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
-  const lastYearKey = lastYearDate.toISOString().split('T')[0];
-  const lastYearDay = getDay(lastYearKey);
-
   const totalDays  = new Date(
     Number(today.slice(0, 4)),
     Number(today.slice(5, 7)),
@@ -117,24 +112,6 @@ export function TodayTab({ onLog, refresh: _refresh }: TodayTabProps) {
           </div>
         </div>
       )}
-
-      {/* On This Day (resurfaced past memory) */}
-      <div className="on-this-day-section">
-        <p className="section-label">On This Day</p>
-        <div className="on-this-day-card">
-          <p className="otd-year">Last year</p>
-          {lastYearDay && lastYearDay.entries.length > 0 ? (
-            <div className="otd-entry-preview">
-              <p className="otd-text">"{lastYearDay.entries[0].text}"</p>
-              {lastYearDay.entries.length > 1 && (
-                <p className="otd-more">+{lastYearDay.entries.length - 1} more moments</p>
-              )}
-            </div>
-          ) : (
-            <p className="otd-text">Start logging every day to unlock your memories here.</p>
-          )}
-        </div>
-      </div>
     </motion.div>
   );
 }

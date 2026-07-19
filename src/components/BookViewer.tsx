@@ -45,12 +45,32 @@ export function BookViewer({ book, onClose }: BookViewerProps) {
     if (currIdx < allPhotos.length - 1) {
       return { entryId: allPhotos[currIdx + 1].entryId, photoIdx: allPhotos[currIdx + 1].idx };
     }
-    return null; // For simplicity, just swipe within the day.
+    return null;
+  };
+
+  const getPrevPhoto = () => {
+    const allPhotos: { entryId: string; url: string; idx: number }[] = [];
+    currentDay.entries.forEach(e => {
+      if (e?.photos) {
+        e.photos.forEach((url, i) => allPhotos.push({ entryId: e.id, url, idx: i }));
+      }
+    });
+    if (!focusedPhoto) return null;
+    const currIdx = allPhotos.findIndex(p => p.entryId === focusedPhoto.entryId && p.idx === focusedPhoto.photoIdx);
+    if (currIdx > 0) {
+      return { entryId: allPhotos[currIdx - 1].entryId, photoIdx: allPhotos[currIdx - 1].idx };
+    }
+    return null;
   };
 
   const swipeNextPhoto = () => {
     const next = getNextPhoto();
     if (next) setFocusedPhoto(next);
+  };
+
+  const swipePrevPhoto = () => {
+    const prev = getPrevPhoto();
+    if (prev) setFocusedPhoto(prev);
   };
 
   // Find last filled entry index for the extras badge
@@ -152,7 +172,7 @@ export function BookViewer({ book, onClose }: BookViewerProps) {
               </div>
             ) : (
               <div className="reader-page">
-                <AnimatePresence mode="wait">
+                <AnimatePresence>
                   <motion.div
                     key={`${pageIdx}-${flipped}`}
                     className="page-leaf"
@@ -305,8 +325,15 @@ export function BookViewer({ book, onClose }: BookViewerProps) {
             {(() => {
               const e = currentDay.entries.find(e => e?.id === focusedPhoto.entryId);
               const url = e?.photos?.[focusedPhoto.photoIdx];
+              const prev = getPrevPhoto();
+              const next = getNextPhoto();
               return (
                 <div className="focus-content" onClick={e => e.stopPropagation()}>
+                  {prev && (
+                    <button className="focus-nav-btn prev" onClick={(e) => { e.stopPropagation(); swipePrevPhoto(); }}>
+                      <ChevronLeft size={32} color="#fff" />
+                    </button>
+                  )}
                   <motion.img 
                     src={url} 
                     alt="Focus" 
@@ -314,9 +341,15 @@ export function BookViewer({ book, onClose }: BookViewerProps) {
                     drag="x"
                     dragConstraints={{ left: 0, right: 0 }}
                     onDragEnd={(_, info) => {
-                      if (info.offset.x < -50) swipeNextPhoto();
+                      if (info.offset.x < -50 && next) swipeNextPhoto();
+                      if (info.offset.x > 50 && prev) swipePrevPhoto();
                     }}
                   />
+                  {next && (
+                    <button className="focus-nav-btn next" onClick={(e) => { e.stopPropagation(); swipeNextPhoto(); }}>
+                      <ChevronRight size={32} color="#fff" />
+                    </button>
+                  )}
                   <div className="focus-caption-scrim">
                     <p className="focus-caption">{e?.text}</p>
                   </div>

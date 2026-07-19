@@ -4,17 +4,19 @@ import {
   Calendar, BookMarked, User, Plus,
 } from 'lucide-react';
 import { TodayTab }   from './TodayTab';
+import { DiscoverTab } from './DiscoverTab';
 import { LibraryTab } from './LibraryTab';
 import { ProfileTab } from './ProfileTab';
 import { LoggingModal } from '../components/LoggingModal';
 import './Home.css';
 
-export type TabId = 'today' | 'library' | 'extras' | 'profile';
+export type TabId = 'today' | 'discover' | 'library' | 'profile';
 
 const TABS: { id: TabId; Icon: React.ElementType; label: string }[] = [
-  { id: 'today',   Icon: Calendar,   label: 'Today'   },
-  { id: 'library', Icon: BookMarked, label: 'Library' },
-  { id: 'profile', Icon: User,       label: 'Profile' },
+  { id: 'today',    Icon: Calendar,   label: 'Today' },
+  { id: 'discover', Icon: BookMarked, label: 'Discover' },
+  { id: 'library',  Icon: BookMarked, label: 'Library' },
+  { id: 'profile',  Icon: User,       label: 'Profile' },
 ];
 
 export function Home() {
@@ -50,12 +52,12 @@ export function Home() {
         </span>
       </div>
 
-      {/* Main content */}
       <div className="home-content">
         <AnimatePresence mode="wait">
-          {tab === 'today'   && <TodayTab   key="today"   onLog={() => setLogging(true)} refresh={refresh} />}
-          {tab === 'library' && <LibraryTab key="library" />}
-          {tab === 'profile' && <ProfileTab key="profile" />}
+          {tab === 'today'    && <TodayTab    key="today"    onLog={() => setLogging(true)} refresh={refresh} />}
+          {tab === 'discover' && <DiscoverTab key="discover" />}
+          {tab === 'library'  && <LibraryTab  key="library" />}
+          {tab === 'profile'  && <ProfileTab  key="profile" />}
         </AnimatePresence>
       </div>
 
@@ -86,7 +88,7 @@ export function Home() {
           </motion.button>
         </div>
 
-        {TABS.slice(2, 3).map(t => {
+        {TABS.slice(2, 4).map(t => {
           const isActive  = tab === t.id;
           return (
             <button

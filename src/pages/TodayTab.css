@@ -21,7 +21,7 @@
   z-index: 0;
 }
 
-.today-header, .today-prompt, .hero-card-empty, .hero-card-filled, .on-this-day-section {
+.today-header, .today-prompt, .hero-card-empty, .hero-card-filled {
   position: relative;
   z-index: 1;
 }
@@ -223,44 +223,4 @@
 .entry-cat-badge {
   font-size: 14px;
   flex-shrink: 0;
-}
-
-/* On This Day */
-.section-label {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-  color: var(--text-tertiary);
-  margin-bottom: 8px;
-}
-.on-this-day-card {
-  background: var(--surface);
-  border: none;
-  border-radius: var(--radius-md);
-  padding: 16px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-}
-.otd-year {
-  font-size: 11px;
-  color: var(--accent);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 4px;
-}
-.otd-entry-preview {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.otd-text {
-  font-size: 14px;
-  color: var(--text-primary);
-  line-height: 1.5;
-  font-style: italic;
-}
-.otd-more {
-  font-size: 12px;
-  color: var(--text-secondary);
 }

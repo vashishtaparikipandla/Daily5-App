@@ -124,9 +124,9 @@ export function getCategoryById(id?: string): Category | undefined {
 
 export function seedDemoDataIfNeeded() {
   const seedVersion = localStorage.getItem('daily5_seed_version');
-  if (seedVersion !== '3') {
+  if (seedVersion !== '4') {
     localStorage.removeItem('daily5_books');
-    localStorage.setItem('daily5_seed_version', '3');
+    localStorage.setItem('daily5_seed_version', '4');
   } else {
     if (getBooks().length > 0) return;
   }
@@ -155,19 +155,14 @@ export function seedDemoDataIfNeeded() {
     { cat: 'other', text: 'Found a $20 bill inside an old winter coat. Score!' },
   ];
 
-  const getPhotos = (cat: string) => {
+  const getPhotos = () => {
     // 50% chance to have photos
     if (Math.random() > 0.5) return undefined;
     const numPhotos = Math.random() > 0.3 ? 1 : 2;
     const urls = [];
-    const themes = {
-      'food': 'food,cafe', 'health': 'fitness,nature', 'learning': 'book,library',
-      'people': 'friends,people', 'work': 'office,desk', 'home': 'interior,plants',
-      'travel': 'landscape,architecture', 'love': 'couple,romantic', 'other': 'abstract,texture'
-    };
-    const theme = themes[cat as keyof typeof themes] || 'nature';
     for (let i = 0; i < numPhotos; i++) {
-      urls.push(`https://source.unsplash.com/random/400x400?${theme}&sig=${Math.random()}`);
+      const seed = Math.random().toString(36).slice(2, 8);
+      urls.push(`https://picsum.photos/seed/${seed}/400/400`);
     }
     return urls;
   };
@@ -176,10 +171,11 @@ export function seedDemoDataIfNeeded() {
     const mk = `${y}-${String(mo + 1).padStart(2, '0')}`;
     const days: DayLog[] = [];
     const daysInMonth = new Date(y, mo + 1, 0).getDate();
+    const currentCalendarDay = now.getDate();
     
     for (let day = 1; day <= daysInMonth; day++) {
-       // Almost all days are filled
-       if (Math.random() > 0.95) continue; 
+       // Almost all days are filled, but guarantee current calendar day is filled
+       if (day !== currentCalendarDay && Math.random() > 0.95) continue;
 
        const dayStr = `${mk}-${String(day).padStart(2, '0')}`;
        const entries: Entry[] = [];
@@ -191,7 +187,7 @@ export function seedDemoDataIfNeeded() {
            id: uid(),
            text: t.text,
            category: t.cat as CategoryId,
-           photos: getPhotos(t.cat)
+           photos: getPhotos()
          });
        }
        
@@ -225,7 +221,7 @@ export function seedDemoDataIfNeeded() {
        const entries: Entry[] = [];
        for (let i=0; i<5; i++) {
          const t = sampleTexts[Math.floor(Math.random() * sampleTexts.length)];
-         entries.push({ id: uid(), text: t.text, category: t.cat as CategoryId, photos: getPhotos(t.cat) });
+         entries.push({ id: uid(), text: t.text, category: t.cat as CategoryId, photos: getPhotos() });
        }
        currentDays.push({ date: dayStr, entries, extras: [] });
   }
@@ -235,7 +231,7 @@ export function seedDemoDataIfNeeded() {
   const todayEntries: Entry[] = [];
   for (let i=0; i<3; i++) {
     const t = sampleTexts[Math.floor(Math.random() * sampleTexts.length)];
-    todayEntries.push({ id: uid(), text: t.text, category: t.cat as CategoryId, photos: getPhotos(t.cat) });
+    todayEntries.push({ id: uid(), text: t.text, category: t.cat as CategoryId, photos: getPhotos() });
   }
   currentDays.push({ date: todayStr, entries: todayEntries, extras: [] });
 
