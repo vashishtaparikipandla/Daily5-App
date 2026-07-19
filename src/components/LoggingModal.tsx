@@ -219,13 +219,19 @@ export function LoggingModal({ onClose, onSaved }: LoggingModalProps) {
                   Moment {activeSlot !== null ? activeSlot + 1 : ''}
                 </div>
 
-                <textarea
-                  className="compose-textarea"
-                  autoFocus
-                  placeholder={placeholder}
-                  value={text}
-                  onChange={e => setText(e.target.value)}
-                />
+                <div className="compose-textarea-wrap">
+                  <textarea
+                    className="compose-textarea"
+                    autoFocus
+                    maxLength={130}
+                    placeholder={placeholder}
+                    value={text}
+                    onChange={e => setText(e.target.value)}
+                  />
+                  <div className={`char-counter ${text.length > 110 ? (text.length >= 130 ? 'limit-reached' : 'limit-near') : ''}`}>
+                    {text.length}/130
+                  </div>
+                </div>
 
                 {/* Active category badge */}
                 {activeCat && (
@@ -235,7 +241,7 @@ export function LoggingModal({ onClose, onSaved }: LoggingModalProps) {
                   </div>
                 )}
 
-                {/* Category chip row */}
+                {/* Category & Media row */}
                 <div className="category-row">
                   {CATEGORIES.map(c => {
                     const isActive = category === c.id;
@@ -256,6 +262,19 @@ export function LoggingModal({ onClose, onSaved }: LoggingModalProps) {
                       </motion.button>
                     );
                   })}
+                  <div className="cat-divider" />
+                  <motion.label
+                    className="cat-chip media-chip"
+                    whileTap={{ scale: 0.9 }}
+                    title="Add Photo"
+                  >
+                    <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => {
+                      if (e.target.files?.length) {
+                        alert('Photo attached (Mocked)');
+                      }
+                    }} />
+                    <span style={{ fontSize: 18 }}>📸</span>
+                  </motion.label>
                 </div>
 
                 <div className="compose-actions">

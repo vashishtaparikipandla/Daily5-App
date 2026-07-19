@@ -136,15 +136,14 @@ export function BookViewer({ book, onClose }: BookViewerProps) {
                           <p className="page-num">Day {pageIdx + 1}</p>
                         </div>
                         <div className="page-entries">
-                          {currentDay.entries.length === 0 ? (
-                            <div className="blank-page"><p>A quiet day.</p></div>
-                          ) : (
-                            currentDay.entries.map((e, i) => {
+                          {[0, 1, 2, 3, 4].map(i => {
+                            const e = currentDay.entries[i];
+                            if (e) {
                               const cat = getCategoryById(e.category);
                               return (
                                 <motion.div
                                   key={e.id}
-                                  className="page-entry"
+                                  className="page-entry page-entry-fixed"
                                   initial={{ opacity: 0, y: 8 }}
                                   animate={{ opacity: 1, y: 0 }}
                                   transition={{ delay: i * 0.05 }}
@@ -161,8 +160,17 @@ export function BookViewer({ book, onClose }: BookViewerProps) {
                                   </div>
                                 </motion.div>
                               );
-                            })
-                          )}
+                            } else {
+                              return (
+                                <div key={`empty-${i}`} className="page-entry page-entry-fixed empty-slot">
+                                  <div className="page-entry-num empty-num">{i + 1}</div>
+                                  <div className="page-entry-body">
+                                    <span className="empty-slot-dash">—</span>
+                                  </div>
+                                </div>
+                              );
+                            }
+                          })}
                         </div>
                         {hasExtras && (
                           <button className="page-flip-hint" onClick={() => setFlipped(true)}>

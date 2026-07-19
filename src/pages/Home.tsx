@@ -64,28 +64,41 @@ export function Home() {
 
       {/* Bottom Navigation */}
       <nav className="bottom-nav">
-        {TABS.map((t, i) => {
-          const isFabSlot = i === 1; // between tab 1 and 2 → FAB in center
+        {TABS.slice(0, 2).map(t => {
           const isActive  = tab === t.id;
           return (
             <button
               key={t.id}
-              className={`nav-tab ${isActive ? 'nav-tab--active' : ''} ${isFabSlot ? 'nav-tab--fab-neighbor' : ''}`}
+              className={`nav-tab ${isActive ? 'nav-tab--active' : ''}`}
               onClick={() => setTab(t.id)}
             >
               <t.Icon size={22} strokeWidth={isActive ? 2 : 1.5} />
               <span className="nav-label">{t.label}</span>
-              {/* FAB between index 1 and 2 */}
-              {i === 1 && (
-                <motion.button
-                  className="nav-fab"
-                  onClick={e => { e.stopPropagation(); setLogging(true); }}
-                  whileTap={{ scale: 0.9 }}
-                  whileHover={{ scale: 1.05 }}
-                >
-                  <Plus size={26} strokeWidth={2.5} color="#fff" />
-                </motion.button>
-              )}
+            </button>
+          );
+        })}
+
+        <div className="nav-fab-spacer">
+          <motion.button
+            className="nav-fab"
+            onClick={e => { e.stopPropagation(); setLogging(true); }}
+            whileTap={{ scale: 0.9 }}
+            whileHover={{ scale: 1.05 }}
+          >
+            <Plus size={26} strokeWidth={2.5} color="#fff" />
+          </motion.button>
+        </div>
+
+        {TABS.slice(2, 4).map(t => {
+          const isActive  = tab === t.id;
+          return (
+            <button
+              key={t.id}
+              className={`nav-tab ${isActive ? 'nav-tab--active' : ''}`}
+              onClick={() => setTab(t.id)}
+            >
+              <t.Icon size={22} strokeWidth={isActive ? 2 : 1.5} />
+              <span className="nav-label">{t.label}</span>
             </button>
           );
         })}

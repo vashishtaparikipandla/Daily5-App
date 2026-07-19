@@ -60,35 +60,31 @@ export function TodayTab({ onLog, refresh: _refresh }: TodayTabProps) {
 
       {/* Hero CTA card */}
       {entries.length === 0 ? (
-        <motion.button
-          className="hero-card-empty"
-          onClick={onLog}
-          whileHover={{ scale: 0.985 }}
-          whileTap={{ scale: 0.97 }}
-        >
-          <div className="hero-slots-preview">
-            {[0,1,2,3,4].map(i => (
-              <div key={i} className="hero-slot-dot">
-                <span>{i + 1}</span>
-              </div>
-            ))}
+        <div className="hero-card-empty">
+          <div className="hero-card-context">
+            <h2 className="hero-day-name">{new Date().toLocaleDateString('en-US', { weekday: 'long' })}, {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</h2>
+            <p className="hero-recall">Your last entry was yesterday</p>
           </div>
-          <div className="hero-card-text">
-            <h2>Tonight's 5</h2>
-            <p>Tap to log today's moments</p>
-          </div>
+          
           <div className="hero-book-progress">
-            <div className="prog-bar-track">
-              <motion.div
-                className="prog-bar-fill"
-                initial={{ width: 0 }}
-                animate={{ width: `${progress * 100}%` }}
-                transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
-              />
+            <div className="hero-prog-header">
+              <div className="mini-book-visual-inline">
+                <div className="mini-book-cover" />
+                <div className="mini-pages" style={{ height: `${Math.max(10, progress * 100)}%` }} />
+              </div>
+              <span>Page {daysLogged + 1} of ~{totalDays} this month</span>
             </div>
-            <span>Page {daysLogged} of {totalDays} this month</span>
           </div>
-        </motion.button>
+
+          <motion.button
+            className="hero-log-cta"
+            onClick={onLog}
+            whileHover={{ scale: 0.985 }}
+            whileTap={{ scale: 0.97 }}
+          >
+            Log tonight's 5
+          </motion.button>
+        </div>
       ) : (
         <div className="hero-card-filled">
           <div className="hero-card-filled-header">

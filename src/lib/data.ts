@@ -121,3 +121,57 @@ export function lockBook(mk: string) {
 export function getCategoryById(id?: string): Category | undefined {
   return CATEGORIES.find(c => c.id === id);
 }
+
+export function seedDemoDataIfNeeded() {
+  if (getBooks().length > 0) return;
+  const books: Book[] = [];
+  const now = new Date();
+  
+  const sampleTexts = [
+    { cat: 'food', text: 'Tried a new recipe for dinner and it was amazing.' },
+    { cat: 'health', text: 'Went for a 5k run in the park.' },
+    { cat: 'learning', text: 'Read a few chapters of a new book.' },
+    { cat: 'people', text: 'Caught up with an old friend over coffee.' },
+    { cat: 'work', text: 'Finally finished that big project at work.' },
+    { cat: 'home', text: 'Cleaned the entire apartment.' },
+    { cat: 'travel', text: 'Took a day trip out to the coast.' },
+    { cat: 'love', text: 'Had a wonderful date night.' },
+    { cat: 'other', text: 'Just relaxed and did absolutely nothing.' },
+  ];
+
+  // Generate 4 past locked months
+  for (let m = 4; m >= 1; m--) {
+    let y = now.getFullYear();
+    let mo = now.getMonth() - m;
+    if (mo < 0) {
+      mo += 12;
+      y -= 1;
+    }
+    const mk = `${y}-${String(mo + 1).padStart(2, '0')}`;
+    const days: DayLog[] = [];
+    
+    // Pick 5 random days
+    for (let day = 5; day <= 25; day += 5) {
+       const dayStr = `${mk}-${String(day).padStart(2, '0')}`;
+       const entries: Entry[] = [];
+       const count = Math.floor(Math.random() * 5) + 1; // 1 to 5 entries
+       for (let i=0; i<count; i++) {
+         const t = sampleTexts[Math.floor(Math.random() * sampleTexts.length)];
+         entries.push({
+           id: uid(),
+           text: t.text,
+           category: t.cat as CategoryId,
+         });
+       }
+       days.push({
+         date: dayStr,
+         entries,
+         extras: count === 5 && Math.random() > 0.5 ? [{ id: uid(), text: 'Bonus: Saw a shooting star!', category: 'other' }] : []
+       });
+    }
+    
+    books.push({ monthKey: mk, locked: true, days });
+  }
+  
+  saveBooks(books);
+}

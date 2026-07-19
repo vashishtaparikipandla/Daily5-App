@@ -7,19 +7,36 @@ interface AuthProps {
 }
 
 export function Auth({ onLogin }: AuthProps) {
+  const [mode, setMode]   = useState<'options' | 'email' | 'otp' | 'encrypt'>('options');
   const [email, setEmail] = useState('');
-  const [pass, setPass]   = useState('');
-  const [mode, setMode]   = useState<'signin' | 'encrypt'>('signin');
+  const [otp, setOtp]     = useState(['', '', '', '', '', '']);
   const [shake, setShake] = useState(false);
 
-  const submit = () => {
-    if (!email) {
+  const handleEmailSubmit = () => {
+    if (!email || !email.includes('@')) {
       setShake(true);
       setTimeout(() => setShake(false), 500);
       return;
     }
-    if (mode === 'signin') setMode('encrypt');
-    else onLogin();
+    setMode('otp');
+  };
+
+  const handleOtpChange = (index: number, val: string) => {
+    if (val.length > 1) return; // limit to 1 char
+    const newOtp = [...otp];
+    newOtp[index] = val;
+    setOtp(newOtp);
+
+    // auto-advance
+    if (val && index < 5) {
+      const nextInput = document.getElementById(`otp-${index + 1}`);
+      nextInput?.focus();
+    }
+
+    // auto-submit if full
+    if (index === 5 && val) {
+      setTimeout(() => setMode('encrypt'), 300);
+    }
   };
 
   if (mode === 'encrypt') {
@@ -43,6 +60,77 @@ export function Auth({ onLogin }: AuthProps) {
     );
   }
 
+  if (mode === 'otp') {
+    return (
+      <motion.div
+        className="auth-wrap"
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: -20 }}
+      >
+        <div className="auth-header">
+          <h1 className="auth-wordmark">Verify Email</h1>
+          <p className="auth-subtitle">Code sent to {email}</p>
+        </div>
+        <div className="otp-container">
+          {otp.map((v, i) => (
+            <input
+              key={i}
+              id={`otp-${i}`}
+              type="text"
+              inputMode="numeric"
+              className="otp-input"
+              value={v}
+              onChange={e => handleOtpChange(i, e.target.value)}
+              onKeyDown={e => {
+                if (e.key === 'Backspace' && !v && i > 0) {
+                  document.getElementById(`otp-${i - 1}`)?.focus();
+                }
+              }}
+            />
+          ))}
+        </div>
+        <div className="otp-footer">
+          <button className="otp-resend" onClick={() => {}}>Resend in 0:59</button>
+          <button className="otp-change" onClick={() => setMode('email')}>Change email</button>
+        </div>
+      </motion.div>
+    );
+  }
+
+  if (mode === 'email') {
+    return (
+      <motion.div
+        className="auth-wrap"
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: -20 }}
+      >
+        <div className="auth-header">
+          <h1 className="auth-wordmark">Sign in</h1>
+          <p className="auth-subtitle">Enter your email to continue</p>
+        </div>
+        <div className="auth-fields">
+          <div className="field-group">
+            <label className="field-label">Email</label>
+            <input
+              type="email"
+              className={`field-input ${shake ? 'shake' : ''}`}
+              placeholder="you@example.com"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              autoFocus
+            />
+          </div>
+        </div>
+        <motion.button className="auth-btn-primary" onClick={handleEmailSubmit} whileTap={{ scale: 0.97 }}>
+          Send Code
+        </motion.button>
+        <button className="otp-change" onClick={() => setMode('options')} style={{ marginTop: 16 }}>Back</button>
+      </motion.div>
+    );
+  }
+
   return (
     <motion.div
       className="auth-wrap"
@@ -56,48 +144,20 @@ export function Auth({ onLogin }: AuthProps) {
         <p className="auth-subtitle">Sign in to continue</p>
       </div>
 
-      {/* OAuth buttons */}
-      <div className="auth-oauth">
-        <motion.button className="oauth-btn" whileTap={{ scale: 0.97 }} onClick={submit}>
+      <div className="auth-oauth" style={{ marginTop: 'auto', marginBottom: 'auto' }}>
+        <motion.button className="oauth-btn" whileTap={{ scale: 0.97 }} onClick={() => setMode('encrypt')}>
           <span className="oauth-icon">🍎</span>
           Continue with Apple
         </motion.button>
-        <motion.button className="oauth-btn" whileTap={{ scale: 0.97 }} onClick={submit}>
+        <motion.button className="oauth-btn" whileTap={{ scale: 0.97 }} onClick={() => setMode('encrypt')}>
           <span className="oauth-icon">G</span>
           Continue with Google
         </motion.button>
+        <motion.button className="oauth-btn" whileTap={{ scale: 0.97 }} onClick={() => setMode('email')}>
+          <span className="oauth-icon">✉️</span>
+          Continue with Email
+        </motion.button>
       </div>
-
-      <div className="auth-divider"><span>or</span></div>
-
-      {/* Email */}
-      <div className="auth-fields">
-        {[
-          { label: 'Email', value: email, setter: setEmail, type: 'email', idx: 0 },
-          { label: 'Password', value: pass, setter: setPass, type: 'password', idx: 1 },
-        ].map(({ label, value, setter, type, idx }) => (
-          <motion.div
-            key={label}
-            className="field-group"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 * idx, duration: 0.2 }}
-          >
-            <label className="field-label">{label}</label>
-            <motion.input
-              type={type}
-              className={`field-input ${shake && label === 'Email' ? 'shake' : ''}`}
-              placeholder={label}
-              value={value}
-              onChange={e => setter(e.target.value)}
-            />
-          </motion.div>
-        ))}
-      </div>
-
-      <motion.button className="auth-btn-primary" onClick={submit} whileTap={{ scale: 0.97 }}>
-        Continue
-      </motion.button>
 
       <p className="auth-footer-note">
         By continuing you agree to the Terms of Service and Privacy Policy.

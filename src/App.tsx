@@ -21,10 +21,13 @@ if (DEMO_FORCE_FRESH) {
   }
 }
 
+import { seedDemoDataIfNeeded } from './lib/data';
+
 function App() {
   const [state, setState] = useState<AppState>('splash');
 
   useEffect(() => {
+    seedDemoDataIfNeeded();
     // Show splash for a minimum of 2s, then decide next screen
     const timer = setTimeout(() => {
       const authed   = localStorage.getItem('daily5_auth')     === 'true';

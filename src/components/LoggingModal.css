@@ -199,20 +199,47 @@
   letter-spacing: 0.5px;
 }
 
-.compose-textarea {
-  flex: 1;
-  border: none;
-  background: transparent;
-  font-size: 20px;
-  line-height: 1.5;
-  color: var(--text-primary);
-  resize: none;
-  outline: none;
-  font-family: var(--font-serif);
-  min-height: 0;
+.compose-textarea-wrap {
+  position: relative;
+  width: 100%;
 }
 
-.compose-textarea::placeholder { color: var(--text-tertiary); }
+.compose-textarea {
+  width: 100%;
+  height: 140px;
+  background: transparent;
+  border: none;
+  resize: none;
+  font-size: 17px;
+  color: var(--text-primary);
+  line-height: 1.5;
+  outline: none;
+}
+.compose-textarea::placeholder {
+  color: var(--text-tertiary);
+  font-weight: 400;
+}
+
+.char-counter {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  font-size: 11px;
+  color: var(--text-tertiary);
+  font-weight: 500;
+  opacity: 0;
+  transition: opacity 0.2s, color 0.2s;
+}
+
+.char-counter.limit-near {
+  opacity: 1;
+  color: var(--text-secondary);
+}
+
+.char-counter.limit-reached {
+  opacity: 1;
+  color: var(--accent);
+}
 
 .compose-active-cat {
   display: inline-flex;

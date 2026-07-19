@@ -1,11 +1,29 @@
 .today-wrap {
   position: absolute;
   inset: 0;
-  padding: 12px 22px 20px;
+  padding: 16px 22px 20px 40px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 18px;
+  background: var(--bg);
+}
+
+/* Notebook margin line */
+.today-wrap::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 24px;
+  width: 1px;
+  background: rgba(232, 89, 58, 0.2);
+  z-index: 0;
+}
+
+.today-header, .today-prompt, .hero-card-empty, .hero-card-filled, .on-this-day-section {
+  position: relative;
+  z-index: 1;
 }
 
 /* Header */
@@ -83,71 +101,63 @@
 
 /* Hero card empty */
 .hero-card-empty {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 24px 20px;
   display: flex;
   flex-direction: column;
   gap: 16px;
-  box-shadow: var(--shadow-md);
   text-align: left;
   width: 100%;
+  padding: 8px 0;
 }
 
-.hero-slots-preview {
+.hero-card-context {
   display: flex;
-  gap: 10px;
-  align-items: center;
+  flex-direction: column;
+  gap: 4px;
 }
 
-.hero-slot-dot {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  border: 1.5px dashed var(--border-strong);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.hero-slot-dot span {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text-tertiary);
-}
-
-.hero-card-text h2 {
+.hero-day-name {
   font-family: var(--font-serif);
   font-size: 22px;
   font-weight: 500;
   color: var(--text-primary);
   line-height: 1.2;
 }
-.hero-card-text p {
+
+.hero-recall {
   font-size: 13px;
   color: var(--text-secondary);
-  margin-top: 3px;
 }
 
-.hero-book-progress {
+.hero-prog-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-tertiary);
+}
+
+.mini-book-visual-inline {
+  width: 16px;
+  height: 22px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 2px 3px 3px 2px;
+  position: relative;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  justify-content: flex-end;
 }
-.prog-bar-track {
-  height: 4px;
-  background: var(--border);
-  border-radius: 2px;
-  overflow: hidden;
-}
-.prog-bar-fill {
-  height: 100%;
-  background: var(--accent);
-  border-radius: 2px;
-}
-.hero-book-progress > span {
-  font-size: 11px;
-  color: var(--text-tertiary);
+
+.hero-log-cta {
+  background: var(--text-primary);
+  color: var(--bg);
+  padding: 14px;
+  border-radius: 24px;
+  font-size: 15px;
+  font-weight: 500;
+  width: 100%;
+  margin-top: 4px;
 }
 
 /* Hero card filled */
