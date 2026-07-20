@@ -1,5 +1,5 @@
 .viewer-overlay {
-  position: fixed;
+  position: absolute;
   inset: 0;
   z-index: 1000;
   background: var(--bg);
@@ -405,7 +405,7 @@
 
 /* Focus Overlay */
 .focus-overlay {
-  position: fixed;
+  position: absolute;
   inset: 0;
   z-index: 1000;
   background: #000;

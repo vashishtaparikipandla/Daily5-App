@@ -142,20 +142,19 @@ export function BookViewer({ book, onClose }: BookViewerProps) {
                 </button>
                 
                 <div className="cover-cta-row">
-                  <div className="cover-cta-group">
-                    <button className="cover-cta-sec" onClick={() => setShowCheckout(true)}>
-                      <Printer size={16} strokeWidth={1.75} />
-                      Print
-                    </button>
-                    <span className="cover-trust-sub">Join 5,000+ others who printed</span>
-                  </div>
+                  <button className="cover-cta-sec" onClick={() => setShowCheckout(true)}>
+                    <Printer size={16} strokeWidth={1.75} />
+                    Print
+                  </button>
                   
-                  <div className="cover-cta-group">
-                    <button className="cover-cta-sec">
-                      <Share2 size={16} strokeWidth={1.75} />
-                      Share
-                    </button>
-                  </div>
+                  <button className="cover-cta-sec">
+                    <Share2 size={16} strokeWidth={1.75} />
+                    Share
+                  </button>
+                </div>
+                
+                <div style={{ textAlign: 'center', marginTop: '8px' }}>
+                  <span className="cover-trust-sub">Join 5,000+ others who printed their book.</span>
                 </div>
               </motion.div>
             </div>

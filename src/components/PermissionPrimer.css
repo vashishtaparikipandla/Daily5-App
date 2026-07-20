@@ -1,5 +1,5 @@
 .permission-primer-overlay {
-  position: fixed;
+  position: absolute;
   inset: 0;
   z-index: 2000;
   background: rgba(0, 0, 0, 0.4);

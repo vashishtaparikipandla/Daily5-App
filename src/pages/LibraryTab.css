@@ -62,8 +62,8 @@
 }
 .library-empty-icon { font-size: 52px; }
 
-/* Annual Book Banner */
 .annual-book-banner {
+  grid-column: 1 / -1;
   background: var(--surface);
   border: 1px solid var(--accent);
   border-radius: 16px;

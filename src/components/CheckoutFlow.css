@@ -1,5 +1,5 @@
 .checkout-wrap {
-  position: fixed;
+  position: absolute;
   inset: 0;
   background: var(--bg);
   z-index: 3000;
