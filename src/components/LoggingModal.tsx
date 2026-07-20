@@ -86,8 +86,6 @@ export function LoggingModal({ onClose, onSaved }: LoggingModalProps) {
     setTimeout(() => { onSaved(); onClose(); }, 1900);
   };
 
-  const activeCat = CATEGORIES.find(c => c.id === category);
-
   return (
     <motion.div
       className="modal-overlay"
@@ -247,50 +245,41 @@ export function LoggingModal({ onClose, onSaved }: LoggingModalProps) {
                   </div>
                 </div>
 
-                {/* Active category badge */}
-                {activeCat && (
-                  <div className="compose-active-cat" style={{ color: activeCat.color, borderColor: activeCat.color + '44', background: activeCat.color + '18' }}>
-                    <activeCat.Icon size={14} strokeWidth={2} />
-                    {activeCat.label}
-                  </div>
-                )}
-
-                {/* Photos Row */}
-                <div className="compose-photos-row">
-                  {photos.map((url, idx) => (
-                    <div key={idx} className="compose-photo-tile">
-                      <img src={url} alt="Attached" className="compose-photo-img" />
-                      <button className="compose-photo-remove" onClick={() => {
-                        setPhotos(photos.filter((_, i) => i !== idx));
-                      }}>
-                        <X size={12} strokeWidth={3} />
-                      </button>
-                    </div>
-                  ))}
-                  {photos.length < 2 && (
-                    <motion.label
-                      className={`compose-photo-add ${photos.length > 0 ? 'small-add' : ''}`}
-                      whileTap={{ scale: 0.95 }}
-                      title="Add Photo"
-                    >
-                      <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => {
-                        if (e.target.files?.length && photos.length < 2) {
-                          setPhotos([...photos, `https://source.unsplash.com/random/400x400?sig=${Math.random()}`]);
-                        }
-                      }} />
-                      <span className="add-photo-icon"><Camera size={24} strokeWidth={1.5} color="var(--text-secondary)" /></span>
-                    </motion.label>
-                  )}
-                  <motion.button
-                    className={`compose-mic-btn ${isListening ? 'listening' : ''}`}
-                    whileTap={{ scale: 0.95 }}
+                {/* Media Actions */}
+                <div className="compose-action-bar">
+                  <label className="compose-action-pill" title="Add Photo">
+                    <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => {
+                      if (e.target.files?.length && photos.length < 2) {
+                        setPhotos([...photos, `https://source.unsplash.com/random/400x400?sig=${Math.random()}`]);
+                      }
+                    }} />
+                    <Camera size={16} /> Photo
+                  </label>
+                  
+                  <button 
+                    className={`compose-action-pill ${isListening ? 'listening' : ''}`}
                     onClick={startListening}
                     disabled={isListening}
-                    title="Voice Log"
                   >
-                    <Mic size={24} strokeWidth={1.5} color={isListening ? "var(--error)" : "var(--text-secondary)"} />
-                  </motion.button>
+                    <Mic size={16} /> Voice
+                  </button>
                 </div>
+
+                {/* Photos Row (Only if photos exist) */}
+                {photos.length > 0 && (
+                  <div className="compose-photos-row">
+                    {photos.map((url, idx) => (
+                      <div key={idx} className="compose-photo-tile">
+                        <img src={url} alt="Attached" className="compose-photo-img" />
+                        <button className="compose-photo-remove" onClick={() => {
+                          setPhotos(photos.filter((_, i) => i !== idx));
+                        }}>
+                          <X size={12} strokeWidth={3} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
 
                 {/* Category row */}
                 <div className="category-row">
@@ -306,7 +295,7 @@ export function LoggingModal({ onClose, onSaved }: LoggingModalProps) {
                         title={c.label}
                       >
                         <c.Icon
-                          size={18}
+                          size={22}
                           strokeWidth={isActive ? 2.25 : 1.75}
                           color={isActive ? c.color : undefined}
                         />

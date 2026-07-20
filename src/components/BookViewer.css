@@ -1,7 +1,7 @@
 .viewer-overlay {
-  position: absolute;
+  position: fixed;
   inset: 0;
-  z-index: 300;
+  z-index: 1000;
   background: var(--bg);
   display: flex;
   flex-direction: column;
@@ -16,6 +16,23 @@
   align-items: center;
   justify-content: center;
   z-index: 10;
+}
+
+.cover-close {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  width: 36px;
+  height: 36px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  z-index: 20;
 }
 
 .cover-reveal-card {
@@ -74,42 +91,49 @@
 
 .cover-ctas {
   display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 260px;
+}
+
+.cover-cta-row {
+  display: flex;
   gap: 10px;
   width: 100%;
-  justify-content: center;
-  align-items: flex-end;
 }
 
 .cover-cta-group {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 6px;
 }
 
-.cover-trust-pill {
-  display: flex;
-  align-items: center;
-  gap: 4px;
+.cover-trust-sub {
   font-size: 10px;
-  color: rgba(255,255,255,0.7);
-  background: rgba(255,255,255,0.1);
-  padding: 4px 8px;
-  border-radius: 12px;
-  white-space: nowrap;
+  color: rgba(255,255,255,0.5);
+  text-align: center;
+  line-height: 1.2;
 }
 
 .cover-cta-primary {
+  width: 100%;
   background: #fff;
   color: var(--accent-dark);
-  padding: 14px 22px;
+  padding: 16px;
   border-radius: 30px;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
+  display: flex;
+  justify-content: center;
 }
 
 .cover-cta-sec {
+  width: 100%;
   display: flex;
+  justify-content: center;
   align-items: center;
   gap: 8px;
   background: rgba(255,255,255,0.12);

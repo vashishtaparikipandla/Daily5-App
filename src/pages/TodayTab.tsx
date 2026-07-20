@@ -41,19 +41,7 @@ export function TodayTab({ onLog, refresh: _refresh }: TodayTabProps) {
     >
       {/* Header */}
       <div className="today-header">
-        <div>
-          <p className="today-dayname">{new Date().toLocaleDateString('en-US', { weekday: 'long' })}</p>
-          <h1 className="today-date">
-            {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}
-          </h1>
-        </div>
-        <div className="today-book-mini">
-          <div className="mini-book-visual">
-            <div className="mini-book-cover" />
-            <div className="mini-pages" style={{ height: `${Math.max(10, progress * 100)}%` }} />
-          </div>
-          <p className="mini-book-label">Pg {daysLogged}/{totalDays}</p>
-        </div>
+        <h1 className="today-greeting">Good evening, Vashishta</h1>
       </div>
 
       {/* Prompt */}
@@ -64,10 +52,9 @@ export function TodayTab({ onLog, refresh: _refresh }: TodayTabProps) {
         <div className="hero-card-empty">
           <div className="hero-card-context">
             <h2 className="hero-day-name">
-              {new Date().toLocaleDateString('en-US', { weekday: 'long' })}, {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}
+              {new Date().toLocaleDateString('en-US', { weekday: 'long' })}, {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
             </h2>
-            <p className="hero-recall">Your last entry was yesterday.</p>
-            <p className="hero-weather">Rainy, 72° in Bengaluru</p>
+            <p className="hero-recall">Your last entry was yesterday. • Rainy, 72° in Bengaluru</p>
           </div>
           
           <div className="hero-book-progress">

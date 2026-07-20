@@ -30,32 +30,16 @@
 .today-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   margin-top: 4px;
 }
 
-.today-dayname {
-  font-size: 14px;
-  color: var(--text-secondary);
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
-}
-
-.today-date {
+.today-greeting {
   font-family: var(--font-serif);
-  font-size: 30px;
+  font-size: 28px;
   font-weight: 500;
-  letter-spacing: -0.5px;
   color: var(--text-primary);
-  line-height: 1.15;
-}
-
-.today-book-mini {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
+  letter-spacing: -0.5px;
 }
 
 .mini-book-visual {
@@ -103,10 +87,13 @@
 .hero-card-empty {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
   text-align: left;
   width: 100%;
-  padding: 8px 0;
+  padding: 24px;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
 }
 
 .hero-card-context {
