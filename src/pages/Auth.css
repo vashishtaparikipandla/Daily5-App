@@ -194,3 +194,41 @@
   color: var(--text-secondary);
   line-height: 1.65;
 }
+
+/* Trust Lines */
+.auth-trust-line {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+  font-size: 12px;
+  color: var(--text-tertiary);
+  text-align: center;
+}
+.auth-trust-icon {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.auth-trust-block {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.auth-trust-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.auth-trust-row.auth-trust-secondary .auth-body {
+  color: var(--text-tertiary);
+  font-size: 14px;
+}
+.auth-trust-row.auth-trust-secondary .auth-trust-icon {
+  color: var(--text-tertiary);
+}
+

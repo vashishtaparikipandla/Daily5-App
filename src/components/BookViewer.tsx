@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ChevronLeft, ChevronRight, RotateCcw, Share2, Printer } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, RotateCcw, Share2, Printer, Package } from 'lucide-react';
 import { Coffee, Plane, Heart, BookOpen, Activity, Bandage } from 'lucide-react';
 import { type Book, formatDate, formatMonthYear, getCategoryById } from '../lib/data';
 import './BookViewer.css';
@@ -135,10 +135,18 @@ export function BookViewer({ book, onClose }: BookViewerProps) {
                 <button className="cover-cta-primary" onClick={() => setShowCover(false)}>
                   Read Book
                 </button>
-                <button className="cover-cta-sec">
-                  <Printer size={16} strokeWidth={1.75} />
-                  Print
-                </button>
+                
+                <div className="cover-cta-group">
+                  <div className="cover-trust-pill">
+                    <Package size={12} />
+                    <span>5,000+ books printed and shipped</span>
+                  </div>
+                  <button className="cover-cta-sec">
+                    <Printer size={16} strokeWidth={1.75} />
+                    Print
+                  </button>
+                </div>
+
                 <button className="cover-cta-sec">
                   <Share2 size={16} strokeWidth={1.75} />
                   Share

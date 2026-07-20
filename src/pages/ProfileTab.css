@@ -154,6 +154,53 @@
   letter-spacing: 0.3px;
 }
 
+/* Gifting Screen */
+.gift-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  gap: 24px;
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  margin-top: 12px;
+  box-shadow: var(--shadow-sm);
+}
+
+.gift-icon-large {
+  width: 80px;
+  height: 80px;
+  background: var(--accent-light);
+  border-radius: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gift-trust-line {
+  font-size: 16px;
+  color: var(--text-secondary);
+  text-align: center;
+  line-height: 1.5;
+  max-width: 280px;
+  font-style: italic;
+}
+
+.gift-btn-primary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--text-primary);
+  color: var(--bg);
+  padding: 14px 24px;
+  border-radius: 30px;
+  font-size: 15px;
+  font-weight: 500;
+  width: 100%;
+  justify-content: center;
+}
+
 /* Sub-screens */
 .sub-header {
   display: flex;

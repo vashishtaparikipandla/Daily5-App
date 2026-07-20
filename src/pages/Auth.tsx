@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { Users, ShieldCheck, Lock } from 'lucide-react';
 import './Auth.css';
 
 interface AuthProps {
@@ -50,9 +51,20 @@ export function Auth({ onLogin }: AuthProps) {
       >
         <div className="auth-encrypt-icon">🔒</div>
         <h2 className="auth-title">Your diary,\nonly yours.</h2>
-        <p className="auth-body">
-          Your entries are end-to-end encrypted. Only you can read them — not even we can access your content.
-        </p>
+        <div className="auth-trust-block">
+          <div className="auth-trust-row">
+            <Lock size={18} className="auth-trust-icon" />
+            <p className="auth-body">
+              Your entries are end-to-end encrypted. Only you can read them — not even we can access your content.
+            </p>
+          </div>
+          <div className="auth-trust-row auth-trust-secondary">
+            <ShieldCheck size={18} className="auth-trust-icon" />
+            <p className="auth-body">
+              Over 2 million private memories logged so far. None of them, ever seen by us.
+            </p>
+          </div>
+        </div>
         <motion.button className="auth-btn-primary" onClick={onLogin} whileTap={{ scale: 0.97 }}>
           I understand — let's go
         </motion.button>
@@ -157,6 +169,10 @@ export function Auth({ onLogin }: AuthProps) {
           <span className="oauth-icon">✉️</span>
           Continue with Email
         </motion.button>
+        <div className="auth-trust-line">
+          <Users size={16} className="auth-trust-icon" />
+          <span>Trusted by 12,000+ people keeping a year they didn't want to lose.</span>
+        </div>
       </div>
 
       <p className="auth-footer-note">

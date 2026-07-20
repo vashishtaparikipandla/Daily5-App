@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
-  Bell, Palette, Shield, LogOut, ChevronRight, User,
+  Bell, Palette, Shield, LogOut, ChevronRight, User, Gift
 } from 'lucide-react';
 import './ProfileTab.css';
 
 export function ProfileTab() {
-  const [sub, setSub] = useState<'main' | 'edit' | 'notifications' | 'appearance' | 'privacy'>('main');
+  const [sub, setSub] = useState<'main' | 'edit' | 'notifications' | 'appearance' | 'privacy' | 'gift'>('main');
 
   const handleLogout = () => {
     localStorage.removeItem('daily5_auth');
@@ -37,6 +37,7 @@ export function ProfileTab() {
             {sub === 'edit' && 'Edit Profile'}
             {sub === 'notifications' && 'Notifications'}
             {sub === 'privacy' && 'Data & Privacy'}
+            {sub === 'gift' && 'Gift Daily 5'}
           </h2>
           <div style={{ width: 24 }} />
         </div>
@@ -118,6 +119,23 @@ export function ProfileTab() {
             </div>
           </div>
         )}
+
+        {sub === 'gift' && (
+          <div className="sub-content">
+            <div className="gift-hero">
+              <div className="gift-icon-large">
+                <Gift size={48} strokeWidth={1.5} color="var(--accent)" />
+              </div>
+              <p className="gift-trust-line">
+                Many people say they wish they'd started years ago — gift someone a head start.
+              </p>
+              <button className="gift-btn-primary">
+                <Gift size={18} />
+                Gift Daily 5
+              </button>
+            </div>
+          </div>
+        )}
       </motion.div>
     );
   }
@@ -157,6 +175,23 @@ export function ProfileTab() {
               <span className="stat-label">{s.label}</span>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Gifting */}
+      <div className="profile-section">
+        <p className="section-label">Spread the Word</p>
+        <div className="settings-list">
+          <button className="settings-row" onClick={() => setSub('gift')}>
+            <div className="settings-icon-wrap" style={{ background: 'var(--accent-light)', color: 'var(--accent)' }}>
+              <Gift size={18} strokeWidth={1.75} />
+            </div>
+            <div className="settings-text">
+              <span className="settings-label">Gift Daily 5</span>
+              <span className="settings-sub">Give someone a head start</span>
+            </div>
+            <ChevronRight size={18} strokeWidth={1.5} className="settings-chevron" />
+          </button>
         </div>
       </div>
 
