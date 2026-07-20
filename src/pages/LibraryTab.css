@@ -8,7 +8,35 @@
   gap: 24px;
 }
 
-.library-header { }
+.library-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.library-header {
+  display: flex;
+  flex-direction: column;
+}
+
+.library-search-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  width: 44px;
+  height: 44px;
+  border-radius: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.1s;
+}
+.library-search-btn:active {
+  transform: scale(0.95);
+}
+
 .library-title {
   font-family: var(--font-serif);
   font-size: 30px;
@@ -33,6 +61,77 @@
   padding: 40px 20px;
 }
 .library-empty-icon { font-size: 52px; }
+
+/* Annual Book Banner */
+.annual-book-banner {
+  background: var(--surface);
+  border: 1px solid var(--accent);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+  transition: transform 0.2s;
+}
+.annual-book-banner:active {
+  transform: scale(0.98);
+}
+.annual-banner-content {
+  flex: 1;
+}
+.annual-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: var(--accent);
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.annual-banner-content h3 {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  margin-bottom: 4px;
+}
+.annual-banner-content p {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.annual-banner-preview {
+  width: 60px;
+  height: 80px;
+  perspective: 400px;
+  margin-left: 16px;
+}
+.annual-book-mini {
+  width: 100%;
+  height: 100%;
+  background: var(--accent-dark);
+  border-radius: 2px 6px 6px 2px;
+  position: relative;
+  transform: rotateY(-15deg);
+  transform-style: preserve-3d;
+  box-shadow: 5px 5px 15px rgba(0,0,0,0.2);
+}
+.annual-book-spine {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 12px;
+  background: #3a4138;
+  transform: rotateY(-90deg);
+  transform-origin: left;
+  border-radius: 4px 0 0 4px;
+}
 .library-empty h3 {
   font-family: var(--font-serif);
   font-size: 20px;

@@ -40,11 +40,12 @@ export type DayLog = {
   extras:  Entry[];
 };
 
-export type Book = {
-  monthKey: string;  // "YYYY-MM"
+export interface Book {
+  monthKey: string;  // "YYYY-MM" or "YYYY-Annual"
   locked:   boolean;
   days:     DayLog[];
-};
+  isAnnual?: boolean;
+}
 
 export function todayKey(): string {
   return new Date().toISOString().split('T')[0];

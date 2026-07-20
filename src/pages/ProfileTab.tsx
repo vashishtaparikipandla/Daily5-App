@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
-  Bell, Palette, Shield, LogOut, ChevronRight, User, Gift
+  Bell, Palette, Shield, LogOut, ChevronRight, User, Gift, Image, MapPin
 } from 'lucide-react';
+import { PhotoBackfillFlow } from '../components/PhotoBackfillFlow';
+import { AddressBook } from '../components/AddressBook';
+import { ReferralOverlay } from '../components/ReferralOverlay';
 import './ProfileTab.css';
 
 export function ProfileTab() {
-  const [sub, setSub] = useState<'main' | 'edit' | 'notifications' | 'appearance' | 'privacy' | 'gift'>('main');
+  const [sub, setSub] = useState<'main' | 'edit' | 'notifications' | 'appearance' | 'privacy' | 'gift' | 'backfill' | 'address' | 'referral'>('main');
 
   const handleLogout = () => {
     localStorage.removeItem('daily5_auth');
@@ -18,6 +21,18 @@ export function ProfileTab() {
   const setTheme = (val: 'light' | 'dark') => {
     document.documentElement.setAttribute('data-theme', val);
   };
+
+  if (sub === 'backfill') {
+    return <PhotoBackfillFlow onComplete={() => setSub('main')} onSkip={() => setSub('main')} />;
+  }
+
+  if (sub === 'address') {
+    return <AddressBook onBack={() => setSub('main')} />;
+  }
+
+  if (sub === 'referral') {
+    return <ReferralOverlay onClose={() => setSub('main')} />;
+  }
 
   if (sub !== 'main') {
     return (
@@ -182,7 +197,7 @@ export function ProfileTab() {
       <div className="profile-section">
         <p className="section-label">Spread the Word</p>
         <div className="settings-list">
-          <button className="settings-row" onClick={() => setSub('gift')}>
+          <button className="settings-row" onClick={() => setSub('referral')}>
             <div className="settings-icon-wrap" style={{ background: 'var(--accent-light)', color: 'var(--accent)' }}>
               <Gift size={18} strokeWidth={1.75} />
             </div>
@@ -199,11 +214,27 @@ export function ProfileTab() {
       <div className="profile-section">
         <p className="section-label">Settings</p>
         <div className="settings-list">
+          <button className="settings-row" onClick={() => setSub('backfill')}>
+            <div className="settings-icon-wrap"><Image size={18} strokeWidth={1.75} /></div>
+            <div className="settings-text">
+              <span className="settings-label">Import old photos</span>
+              <span className="settings-sub">Turn past days into pages</span>
+            </div>
+            <ChevronRight size={18} strokeWidth={1.5} className="settings-chevron" />
+          </button>
           <button className="settings-row" onClick={() => setSub('notifications')}>
             <div className="settings-icon-wrap"><Bell size={18} strokeWidth={1.75} /></div>
             <div className="settings-text">
               <span className="settings-label">Notifications</span>
               <span className="settings-sub">9:00 PM daily reminder</span>
+            </div>
+            <ChevronRight size={18} strokeWidth={1.5} className="settings-chevron" />
+          </button>
+          <button className="settings-row" onClick={() => setSub('address')}>
+            <div className="settings-icon-wrap"><MapPin size={18} strokeWidth={1.75} /></div>
+            <div className="settings-text">
+              <span className="settings-label">Shipping Addresses</span>
+              <span className="settings-sub">Manage where your books go</span>
             </div>
             <ChevronRight size={18} strokeWidth={1.5} className="settings-chevron" />
           </button>

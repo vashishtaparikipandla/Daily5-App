@@ -1,0 +1,191 @@
+.checkout-wrap {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 3000;
+  display: flex;
+  flex-direction: column;
+}
+
+.checkout-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  padding-top: max(16px, env(safe-area-inset-top));
+}
+.checkout-back {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  padding: 4px;
+  margin-left: -4px;
+  cursor: pointer;
+}
+.checkout-title {
+  font-family: var(--font-serif);
+  font-size: 20px;
+}
+
+.checkout-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.order-summary-card {
+  display: flex;
+  gap: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+}
+.order-book-preview {
+  width: 72px;
+  height: 96px;
+  background: var(--accent-dark);
+  border-radius: 4px 8px 8px 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 2px 0 5px rgba(0,0,0,0.2), 2px 2px 8px rgba(0,0,0,0.3);
+}
+.order-book-month {
+  color: #fff;
+  font-family: var(--font-serif);
+  font-size: 14px;
+  text-align: center;
+  padding: 0 8px;
+}
+
+.order-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.order-details h3 {
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+.order-details p {
+  font-size: 13px;
+  color: var(--text-tertiary);
+  margin-bottom: 12px;
+}
+.order-price {
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.checkout-section h3 {
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-tertiary);
+  margin-bottom: 12px;
+}
+
+.add-address-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px;
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.add-address-btn:active {
+  background: var(--surface);
+}
+
+.checkout-address-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+}
+.address-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.addr-name {
+  font-weight: 600;
+  font-size: 15px;
+}
+.addr-text {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+.change-btn {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.payment-mock {
+  padding: 16px;
+  background: #000;
+  color: #fff;
+  border-radius: 12px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.checkout-footer {
+  padding: 24px;
+  padding-bottom: max(24px, env(safe-area-inset-bottom));
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+}
+
+.checkout-btn-primary {
+  width: 100%;
+  padding: 16px;
+  border-radius: 30px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+}
+.checkout-btn-primary:disabled {
+  opacity: 0.5;
+}
+
+.checkout-success {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  text-align: center;
+}
+.checkout-success h2 {
+  font-family: var(--font-serif);
+  font-size: 28px;
+  margin: 24px 0 12px;
+}
+.checkout-success p {
+  color: var(--text-secondary);
+  line-height: 1.5;
+}

@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronLeft, ChevronRight, RotateCcw, Share2, Printer } from 'lucide-react';
 import { Coffee, Plane, Heart, BookOpen, Activity, Bandage } from 'lucide-react';
 import { type Book, formatDate, formatMonthYear, getCategoryById } from '../lib/data';
+import { CheckoutFlow } from './CheckoutFlow';
 import './BookViewer.css';
 
 const COVER_ICONS = [Coffee, Plane, Heart, BookOpen, Activity, Bandage] as const;
@@ -17,6 +18,7 @@ export function BookViewer({ book, onClose }: BookViewerProps) {
   const [pageIdx, setPageIdx]   = useState(0);
   const [flipped, setFlipped]   = useState(false);
   const [showCover, setShowCover] = useState(true);
+  const [showCheckout, setShowCheckout] = useState(false);
 
   const currentDay = days[pageIdx];
   const hasPrev    = pageIdx > 0;
@@ -104,14 +106,14 @@ export function BookViewer({ book, onClose }: BookViewerProps) {
             <div className="cover-reveal-card">
               <div className="cover-reveal-face">
                 <motion.div
-                  className="cover-3d-inner"
+                  className={`cover-3d-inner ${book.isAnnual ? 'annual-mode' : ''}`}
                   initial={{ rotateY: -90 }}
                   animate={{ rotateY: 0 }}
                   transition={{ duration: 1, ease: [0.65, 0, 0.35, 1], delay: 0.2 }}
                   style={{ transformStyle: 'preserve-3d' }}
                 >
                   <div className="cover-face">
-                    <h2 className="cover-title">{formatMonthYear(book.monthKey)}</h2>
+                    <h2 className="cover-title">{book.isAnnual ? book.monthKey.split('-')[0] + ' Collection' : formatMonthYear(book.monthKey)}</h2>
                     <div className="cover-icons">
                       {COVER_ICONS.map((Icon, i) => (
                         <motion.div
@@ -124,7 +126,7 @@ export function BookViewer({ book, onClose }: BookViewerProps) {
                         </motion.div>
                       ))}
                     </div>
-                    <p className="cover-days">{days.length} day{days.length !== 1 ? 's' : ''} remembered</p>
+                    <p className="cover-days">{book.isAnnual ? '365' : days.length} day{days.length !== 1 && !book.isAnnual ? 's' : ''} remembered</p>
                   </div>
                 </motion.div>
               </div>
@@ -141,7 +143,7 @@ export function BookViewer({ book, onClose }: BookViewerProps) {
                 
                 <div className="cover-cta-row">
                   <div className="cover-cta-group">
-                    <button className="cover-cta-sec">
+                    <button className="cover-cta-sec" onClick={() => setShowCheckout(true)}>
                       <Printer size={16} strokeWidth={1.75} />
                       Print
                     </button>
@@ -369,6 +371,12 @@ export function BookViewer({ book, onClose }: BookViewerProps) {
               );
             })()}
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showCheckout && (
+          <CheckoutFlow book={book} onClose={() => setShowCheckout(false)} />
         )}
       </AnimatePresence>
     </motion.div>

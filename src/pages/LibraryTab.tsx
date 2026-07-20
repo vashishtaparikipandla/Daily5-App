@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BookMarked, Coffee, Plane, Heart, BookOpen } from 'lucide-react';
+import { BookMarked, Coffee, Plane, Heart, BookOpen, Search, Sparkles } from 'lucide-react';
 import { getBooks, formatMonthYear, lockBook, type Book } from '../lib/data';
 import { BookViewer } from '../components/BookViewer';
+import { SearchOverlay } from '../components/SearchOverlay';
 import './LibraryTab.css';
 
 const COVER_ICONS = [Coffee, Plane, Heart, BookOpen] as const;
@@ -10,6 +11,7 @@ const COVER_ICONS = [Coffee, Plane, Heart, BookOpen] as const;
 export function LibraryTab() {
   const [books, setBooks]   = useState<Book[]>(getBooks);
   const [viewing, setViewing] = useState<Book | null>(null);
+  const [showSearch, setShowSearch] = useState(false);
 
   const handleLock = (mk: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -26,9 +28,14 @@ export function LibraryTab() {
         exit={{ opacity: 0, y: -10 }}
         transition={{ duration: 0.22 }}
       >
-        <div className="library-header">
-          <h1 className="library-title">Library</h1>
-          <p className="library-subtitle">Your memory archive</p>
+        <div className="library-header-top">
+          <div className="library-header">
+            <h1 className="library-title">Library</h1>
+            <p className="library-subtitle">Your memory archive</p>
+          </div>
+          <button className="library-search-btn" onClick={() => setShowSearch(true)}>
+            <Search size={24} color="var(--text-primary)" />
+          </button>
         </div>
 
         {books.length === 0 ? (
@@ -41,9 +48,32 @@ export function LibraryTab() {
           </div>
         ) : (
           <div className="shelf">
+            {/* Annual Book Banner */}
+            <motion.div 
+              className="annual-book-banner"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              onClick={() => {
+                // Mock opening an annual book
+                const annualBook: Book = { ...books[0], monthKey: '2023-Annual', isAnnual: true };
+                setViewing(annualBook);
+              }}
+            >
+              <div className="annual-banner-content">
+                <span className="annual-badge"><Sparkles size={12} /> The Annual Book</span>
+                <h3>Your 2023 Collection</h3>
+                <p>365 days, 1 beautiful hardcover volume.</p>
+              </div>
+              <div className="annual-banner-preview">
+                <div className="annual-book-mini">
+                  <div className="annual-book-spine" />
+                </div>
+              </div>
+            </motion.div>
+
             {books.map((book, i) => {
               const label = formatMonthYear(book.monthKey);
-              const daysLogged = book.days.filter(d => d.entries.length > 0).length;
+              const daysLogged = book.days.filter(_ => _.entries.length > 0).length;
               const [y, m] = book.monthKey.split('-').map(Number);
               const totalDays = new Date(y, m, 0).getDate();
               const pct = daysLogged / totalDays;
@@ -109,6 +139,16 @@ export function LibraryTab() {
       <AnimatePresence>
         {viewing && (
           <BookViewer key="viewer" book={viewing} onClose={() => setViewing(null)} />
+        )}
+        {showSearch && (
+          <SearchOverlay 
+            key="search" 
+            onClose={() => setShowSearch(false)}
+            onSelectResult={(book, _) => {
+              setShowSearch(false);
+              setViewing(book);
+            }} 
+          />
         )}
       </AnimatePresence>
     </>

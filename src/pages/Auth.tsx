@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Users, ShieldCheck, Lock } from 'lucide-react';
+import { PhotoBackfillFlow } from '../components/PhotoBackfillFlow';
 import './Auth.css';
 
 interface AuthProps {
@@ -8,7 +9,7 @@ interface AuthProps {
 }
 
 export function Auth({ onLogin }: AuthProps) {
-  const [mode, setMode]   = useState<'options' | 'email' | 'otp' | 'encrypt'>('options');
+  const [mode, setMode]   = useState<'options' | 'email' | 'otp' | 'encrypt' | 'backfill'>('options');
   const [email, setEmail] = useState('');
   const [otp, setOtp]     = useState(['', '', '', '', '', '']);
   const [shake, setShake] = useState(false);
@@ -40,6 +41,10 @@ export function Auth({ onLogin }: AuthProps) {
     }
   };
 
+  if (mode === 'backfill') {
+    return <PhotoBackfillFlow onComplete={onLogin} onSkip={onLogin} />;
+  }
+
   if (mode === 'encrypt') {
     return (
       <motion.div
@@ -65,7 +70,7 @@ export function Auth({ onLogin }: AuthProps) {
             </p>
           </div>
         </div>
-        <motion.button className="auth-btn-primary" onClick={onLogin} whileTap={{ scale: 0.97 }}>
+        <motion.button className="auth-btn-primary" onClick={() => setMode('backfill')} whileTap={{ scale: 0.97 }}>
           I understand — let's go
         </motion.button>
       </motion.div>
