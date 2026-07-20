@@ -198,17 +198,18 @@
 /* Trust Lines */
 .auth-trust-line {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   gap: 8px;
   margin-top: 16px;
   font-size: 12px;
   color: var(--text-tertiary);
-  text-align: center;
+  text-align: left;
 }
 .auth-trust-icon {
   color: var(--accent);
   flex-shrink: 0;
+  margin-top: 3px;
 }
 
 .auth-trust-block {

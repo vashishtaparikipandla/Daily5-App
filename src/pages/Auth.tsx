@@ -1,6 +1,18 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Users, ShieldCheck, Lock } from 'lucide-react';
+import { Users, ShieldCheck, Lock, Mail } from 'lucide-react';
+
+const AppleIcon = () => (
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+    <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.56-1.702z" />
+  </svg>
+);
+
+const GoogleIcon = () => (
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+    <path d="M21.35 11.1h-9.17v2.73h6.51c-.33 3.81-3.5 5.44-6.5 5.44C8.36 19.27 5 16.25 5 12c0-4.1 3.2-7.27 7.2-7.27 3.09 0 4.9 1.97 4.9 1.97L19 4.72S16.56 2 12.1 2C6.42 2 2.03 6.8 2.03 12c0 5.05 4.13 10 10.22 10 5.35 0 9.25-3.67 9.25-9.09 0-1.15-.15-1.81-.15-1.81z" />
+  </svg>
+);
 import { PhotoBackfillFlow } from '../components/PhotoBackfillFlow';
 import './Auth.css';
 
@@ -55,7 +67,7 @@ export function Auth({ onLogin }: AuthProps) {
         transition={{ type: 'spring', stiffness: 300, damping: 28 }}
       >
         <div className="auth-encrypt-icon">🔒</div>
-        <h2 className="auth-title">Your diary,\nonly yours.</h2>
+        <h2 className="auth-title">Your diary,<br/>only yours.</h2>
         <div className="auth-trust-block">
           <div className="auth-trust-row">
             <Lock size={18} className="auth-trust-icon" />
@@ -163,20 +175,20 @@ export function Auth({ onLogin }: AuthProps) {
 
       <div className="auth-oauth" style={{ marginTop: 'auto', marginBottom: 'auto' }}>
         <motion.button className="oauth-btn" whileTap={{ scale: 0.97 }} onClick={() => setMode('encrypt')}>
-          <span className="oauth-icon">🍎</span>
+          <span className="oauth-icon"><AppleIcon /></span>
           Continue with Apple
         </motion.button>
         <motion.button className="oauth-btn" whileTap={{ scale: 0.97 }} onClick={() => setMode('encrypt')}>
-          <span className="oauth-icon">G</span>
+          <span className="oauth-icon"><GoogleIcon /></span>
           Continue with Google
         </motion.button>
         <motion.button className="oauth-btn" whileTap={{ scale: 0.97 }} onClick={() => setMode('email')}>
-          <span className="oauth-icon">✉️</span>
+          <span className="oauth-icon"><Mail size={18} /></span>
           Continue with Email
         </motion.button>
         <div className="auth-trust-line">
           <Users size={16} className="auth-trust-icon" />
-          <span>Trusted by 12,000+ people keeping a year they didn't want to lose.</span>
+          <span style={{ textAlign: 'left', lineHeight: '1.4' }}>Trusted by 12,000+ people keeping a year they didn't want to lose.</span>
         </div>
       </div>
 

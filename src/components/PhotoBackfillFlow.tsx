@@ -13,9 +13,9 @@ type FlowStep = 'offer' | 'permission' | 'select_days' | 'quick_fill' | 'reveal'
 
 // Mock clustering data
 const MOCK_DAYS = [
-  { id: 'd1', date: new Date(Date.now() - 2 * 86400000), count: 8, thumb: 'https://source.unsplash.com/random/200x200?sig=1' },
-  { id: 'd2', date: new Date(Date.now() - 5 * 86400000), count: 14, thumb: 'https://source.unsplash.com/random/200x200?sig=2' },
-  { id: 'd3', date: new Date(Date.now() - 12 * 86400000), count: 5, thumb: 'https://source.unsplash.com/random/200x200?sig=3' }
+  { id: 'd1', date: new Date(Date.now() - 2 * 86400000), count: 8, thumb: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=400&q=80' },
+  { id: 'd2', date: new Date(Date.now() - 5 * 86400000), count: 14, thumb: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=400&q=80' },
+  { id: 'd3', date: new Date(Date.now() - 12 * 86400000), count: 5, thumb: 'https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&w=400&q=80' }
 ];
 
 export const PhotoBackfillFlow: React.FC<PhotoBackfillFlowProps> = ({ onComplete, onSkip }) => {

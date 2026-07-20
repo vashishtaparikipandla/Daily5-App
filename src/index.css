@@ -169,3 +169,25 @@ input, textarea { font-family: var(--font-sans); }
 .flex-center { display: flex; align-items: center; justify-content: center; }
 .full { position: absolute; inset: 0; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+
+@media (max-width: 600px) {
+  #root {
+    background: var(--bg);
+  }
+  .phone-shell {
+    width: 100vw;
+    height: 100dvh;
+    border-radius: 0;
+    box-shadow: none;
+    border: none;
+  }
+  .phone-shell::before, .phone-shell::after {
+    display: none;
+  }
+  .app-viewport {
+    border-radius: 0;
+  }
+  .status-bar {
+    display: none; /* Let native OS status bar take over on actual devices */
+  }
+}
