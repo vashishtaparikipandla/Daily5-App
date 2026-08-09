@@ -1,0 +1,201 @@
+.address-book-wrap {
+  position: absolute;
+  inset: 0;
+  background: var(--bg);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+}
+
+.address-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  padding-top: max(16px, env(safe-area-inset-top));
+}
+.address-back {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  padding: 4px;
+  margin-left: -4px;
+  cursor: pointer;
+}
+.address-title {
+  font-family: var(--font-serif);
+  font-size: 20px;
+}
+
+.address-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.address-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  text-align: center;
+  color: var(--text-secondary);
+}
+.address-empty-icon {
+  width: 64px;
+  height: 64px;
+  background: var(--surface);
+  border-radius: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  color: var(--text-tertiary);
+}
+.address-empty h3 {
+  font-size: 18px;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.address-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-bottom: 100px;
+}
+
+.address-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  align-items: flex-start;
+  text-align: left;
+  gap: 16px;
+  box-shadow: var(--shadow-sm);
+}
+.address-card.picker-mode {
+  cursor: pointer;
+}
+.address-card.picker-mode:active {
+  transform: scale(0.98);
+}
+
+.address-card-main {
+  flex: 1;
+}
+
+.address-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.address-name {
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--text-primary);
+}
+.address-badge {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: var(--accent-light);
+  color: var(--accent);
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.address-text {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.address-card-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.address-set-default {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.address-more {
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  padding: 4px;
+}
+
+.address-fab-wrap {
+  position: absolute;
+  bottom: max(24px, env(safe-area-inset-bottom));
+  right: 24px;
+}
+.address-fab {
+  width: 56px;
+  height: 56px;
+  border-radius: 28px;
+  background: var(--accent);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  cursor: pointer;
+}
+.address-fab:active {
+  transform: scale(0.95);
+}
+
+/* Add Sheet */
+.address-add-sheet {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg);
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  padding: 24px;
+  padding-bottom: max(24px, env(safe-area-inset-bottom));
+  box-shadow: 0 -10px 40px rgba(0,0,0,0.1);
+  z-index: 200;
+}
+
+.sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+.sheet-header h3 {
+  font-size: 18px;
+  font-family: var(--font-serif);
+}
+.sheet-close {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.field-row {
+  display: flex;
+  gap: 12px;
+}

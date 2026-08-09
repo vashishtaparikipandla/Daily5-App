@@ -1,0 +1,107 @@
+.discover-wrap {
+  position: absolute;
+  inset: 0;
+  padding: 16px 22px 20px 22px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  background: var(--bg);
+}
+
+.discover-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.discover-title {
+  font-family: var(--font-serif);
+  font-size: 32px;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.1;
+}
+
+.discover-subtitle {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.discover-empty {
+  margin-top: 40px;
+  text-align: center;
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  padding: 0 20px;
+}
+
+.discover-content {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding-bottom: 40px;
+}
+
+.otd-group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: var(--bg-alt);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+  border: 1px solid var(--border-subtle);
+}
+
+.otd-group-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-bottom: 1px dashed var(--border-strong);
+  padding-bottom: 12px;
+}
+
+.otd-time-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.otd-date-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-family: var(--font-serif);
+}
+
+.otd-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.otd-view-book-btn {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  transition: all 0.2s var(--ease-standard);
+}
+
+.otd-view-book-btn:active {
+  background: var(--bg);
+  transform: scale(0.98);
+}

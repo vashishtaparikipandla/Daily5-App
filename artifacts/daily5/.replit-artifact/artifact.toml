@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Daily 5"
+description = "Daily 5 is a private mobile-first journaling app. Each day, users log 5 moments worth remembering. The app features a beautiful phone-in-browser mockup with an onboarding flow, authentication, and a full home experience with tabs for Today, Library, Discover, Profile, and more. Built for people who want to capture daily memories that compile into beautiful monthly books."
+version = "1.0.0"
+id = "artifacts/daily5"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 26132
+
+[services.development]
+run = "pnpm --filter @workspace/daily5 run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/daily5", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/daily5/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "26132"
+BASE_PATH = "/"

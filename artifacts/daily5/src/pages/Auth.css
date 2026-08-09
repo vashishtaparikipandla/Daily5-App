@@ -1,0 +1,235 @@
+.auth-wrap {
+  position: absolute;
+  inset: 0;
+  background: var(--bg);
+  padding: 64px 28px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow-y: auto;
+}
+
+.auth-header {
+  margin-bottom: 8px;
+}
+
+.auth-wordmark {
+  font-family: var(--font-serif);
+  font-size: 32px;
+  font-weight: 500;
+  color: var(--text-primary);
+  letter-spacing: -0.5px;
+}
+
+.auth-subtitle {
+  font-size: 15px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+.auth-oauth {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.oauth-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 20px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 500;
+  box-shadow: var(--shadow-sm);
+  transition: background 0.15s;
+}
+.oauth-btn:hover { background: var(--bg-alt); }
+
+.oauth-icon {
+  font-size: 18px;
+  width: 24px;
+  text-align: center;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-tertiary);
+  font-size: 13px;
+}
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.auth-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.field-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.field-input {
+  padding: 14px 16px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text-primary);
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.field-input:focus { border-color: var(--accent); }
+
+.field-input.shake {
+  animation: shake 0.4s ease;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+/* OTP Flow */
+.otp-container {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin: 16px 0;
+}
+.otp-input {
+  width: 44px;
+  height: 52px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text-primary);
+  font-size: 20px;
+  font-weight: 600;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.otp-input:focus { border-color: var(--accent); }
+
+.otp-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+.otp-resend {
+  font-size: 13px;
+  color: var(--text-secondary);
+  background: transparent;
+}
+.otp-change {
+  font-size: 13px;
+  color: var(--accent);
+  font-weight: 500;
+  background: transparent;
+}
+
+.auth-btn-primary {
+  background: var(--text-primary);
+  color: var(--bg);
+  padding: 16px;
+  border-radius: 40px;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.1px;
+  margin-top: 4px;
+}
+
+.auth-footer-note {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* Encrypt screen */
+.auth-encrypt-icon {
+  font-size: 56px;
+  text-align: center;
+  margin: 32px 0 8px;
+}
+.auth-title {
+  font-family: var(--font-serif);
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--text-primary);
+  white-space: pre-line;
+}
+.auth-body {
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.65;
+}
+
+/* Trust Lines */
+.auth-trust-line {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+  font-size: 12px;
+  color: var(--text-tertiary);
+  text-align: left;
+}
+.auth-trust-icon {
+  color: var(--accent);
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+.auth-trust-block {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.auth-trust-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.auth-trust-row.auth-trust-secondary .auth-body {
+  color: var(--text-tertiary);
+  font-size: 14px;
+}
+.auth-trust-row.auth-trust-secondary .auth-trust-icon {
+  color: var(--text-tertiary);
+}
+

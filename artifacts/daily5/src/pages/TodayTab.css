@@ -1,0 +1,213 @@
+.today-wrap {
+  position: absolute;
+  inset: 0;
+  padding: 16px 22px 20px 40px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  background: var(--bg);
+}
+
+/* Notebook margin line */
+.today-wrap::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 24px;
+  width: 1px;
+  background: rgba(232, 89, 58, 0.2);
+  z-index: 0;
+}
+
+.today-header, .today-prompt, .hero-card-empty, .hero-card-filled {
+  position: relative;
+  z-index: 1;
+}
+
+/* Header */
+.today-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.today-greeting {
+  font-family: var(--font-serif);
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--text-primary);
+  letter-spacing: -0.5px;
+}
+
+.mini-book-visual {
+  width: 28px;
+  height: 36px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 3px 5px 5px 3px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.mini-book-cover {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 0%, var(--accent-light) 100%);
+}
+
+.mini-pages {
+  background: var(--accent);
+  width: 100%;
+  transition: height 0.6s var(--ease-standard);
+  border-radius: 0 0 2px 0;
+}
+
+.mini-book-label {
+  font-size: 9px;
+  color: var(--text-secondary);
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+/* Prompt */
+.today-prompt {
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-style: italic;
+  font-family: var(--font-serif);
+}
+
+/* Hero card empty */
+.hero-card-empty {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  text-align: left;
+  width: 100%;
+  padding: 24px;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.hero-card-context {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hero-day-name {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.hero-recall {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.hero-prog-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-tertiary);
+}
+
+.mini-book-visual-inline {
+  width: 16px;
+  height: 22px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 2px 3px 3px 2px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.hero-log-cta {
+  background: var(--text-primary);
+  color: var(--bg);
+  padding: 14px;
+  border-radius: 24px;
+  font-size: 15px;
+  font-weight: 500;
+  width: 100%;
+  margin-top: 4px;
+}
+
+/* Hero card filled */
+.hero-card-filled {
+  background: var(--surface);
+  border: none;
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+
+.hero-card-filled-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.hero-card-filled-header h2 {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  font-weight: 500;
+}
+.edit-btn {
+  font-size: 13px;
+  color: var(--accent);
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 20px;
+  background: var(--accent-light);
+}
+
+.filled-entries {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.filled-entry {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: var(--bg-alt);
+  border-radius: 10px;
+}
+.entry-num {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent);
+  width: 16px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.entry-text {
+  font-size: 13px;
+  flex: 1;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.entry-cat-badge {
+  font-size: 14px;
+  flex-shrink: 0;
+}

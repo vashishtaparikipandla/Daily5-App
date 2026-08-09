@@ -1,0 +1,312 @@
+.library-wrap {
+  position: absolute;
+  inset: 0;
+  padding: 12px 22px 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.library-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.library-header {
+  display: flex;
+  flex-direction: column;
+}
+
+.library-search-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  width: 44px;
+  height: 44px;
+  border-radius: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.1s;
+}
+.library-search-btn:active {
+  transform: scale(0.95);
+}
+
+.library-title {
+  font-family: var(--font-serif);
+  font-size: 30px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-top: 4px;
+}
+.library-subtitle {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.library-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 12px;
+  padding: 40px 20px;
+}
+.library-empty-icon { font-size: 52px; }
+
+.annual-book-banner {
+  grid-column: 1 / -1;
+  background: var(--surface);
+  border: 1px solid var(--accent);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+  transition: transform 0.2s;
+}
+.annual-book-banner:active {
+  transform: scale(0.98);
+}
+.annual-banner-content {
+  flex: 1;
+}
+.annual-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: var(--accent);
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.annual-banner-content h3 {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  margin-bottom: 4px;
+}
+.annual-banner-content p {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.annual-banner-preview {
+  width: 60px;
+  height: 80px;
+  perspective: 400px;
+  margin-left: 16px;
+}
+.annual-book-mini {
+  width: 100%;
+  height: 100%;
+  background: var(--accent-dark);
+  border-radius: 2px 6px 6px 2px;
+  position: relative;
+  transform: rotateY(-15deg);
+  transform-style: preserve-3d;
+  box-shadow: 5px 5px 15px rgba(0,0,0,0.2);
+}
+.annual-book-spine {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 12px;
+  background: #3a4138;
+  transform: rotateY(-90deg);
+  transform-origin: left;
+  border-radius: 4px 0 0 4px;
+}
+.library-empty h3 {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  color: var(--text-primary);
+}
+.library-empty p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* Shelf */
+.shelf {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.book-item {
+  position: relative;
+  background: transparent;
+  border: none;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+}
+.book-item.current {
+  /* Current month book styling */
+}
+.book-item.current .book-cover-3d {
+  transform: rotateY(-15deg);
+}
+
+/* 3D Book visual */
+.book-cover-3d {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  perspective: 400px;
+  flex-shrink: 0;
+  transition: transform 0.3s;
+}
+.book-item:hover .book-cover-3d {
+  transform: rotateY(-10deg) translateY(-2px);
+}
+
+.book-cover-face {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+  border-radius: 4px 12px 12px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transform-origin: left center;
+  box-shadow: 4px 8px 24px rgba(0,0,0,0.15);
+}
+
+.book-cover-month {
+  font-family: var(--font-serif);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.book-cover-year {
+  color: rgba(255,255,255,0.7);
+  font-size: 12px;
+}
+.book-cover-icons {
+  display: flex;
+  gap: 4px;
+  font-size: 10px;
+}
+
+.book-spine-3d {
+  position: absolute;
+  left: 0;
+  top: 0; bottom: 0;
+  width: 12px;
+  background: var(--accent-dark);
+  border-radius: 6px 0 0 6px;
+  transform: rotateY(-90deg) translateZ(6px);
+  transform-origin: left center;
+}
+
+.book-pages-3d {
+  position: absolute;
+  right: -8px;
+  top: 4px; bottom: 4px;
+  width: 8px;
+  background: repeating-linear-gradient(
+    to bottom,
+    #f0ece4 0px, #f0ece4 2px,
+    #e2ddd5 2px, #e2ddd5 3px
+  );
+  border-radius: 0 4px 4px 0;
+}
+
+/* Book meta overlay */
+.book-meta-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-radius: 4px 12px 12px 4px;
+  overflow: hidden;
+}
+
+.book-meta-top {
+  display: flex;
+  justify-content: flex-end;
+  padding: 8px;
+}
+
+.book-radial-progress {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  color: rgba(255,255,255,0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.book-radial-progress svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  stroke-dasharray: 87.96; /* 2 * pi * 14 = 87.96 */
+}
+.book-radial-text {
+  font-size: 10px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.book-meta-bottom {
+  padding: 12px 12px 0 12px;
+  background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.book-top-cats {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  transform: translateY(50%); /* overlap bottom edge */
+}
+
+.book-top-cat-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+}
+
+.lock-now-btn {
+  display: none; /* Hide for grid view */
+}
