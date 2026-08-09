@@ -11,6 +11,11 @@ export const KEYS = {
   RECENT_SEARCHES: '@daily5/recent_searches',
   NOTIF_PREFS: '@daily5/notif_prefs',
   BACKUP_ENABLED: '@daily5/backup_enabled',
+  // Google Drive backup
+  DRIVE_CONNECTED: '@daily5/drive_connected',
+  DRIVE_ACCOUNT: '@daily5/drive_account',
+  DRIVE_SCHEDULE: '@daily5/drive_schedule',   // 'off' | 'daily' | 'weekly'
+  DRIVE_LAST_BACKUP: '@daily5/drive_last_backup', // ISO timestamp
 };
 
 export async function loadBooks(): Promise<Book[]> {

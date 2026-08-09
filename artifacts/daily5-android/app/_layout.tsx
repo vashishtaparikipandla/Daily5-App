@@ -20,6 +20,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { AppProvider } from '@/contexts/AppContext';
 import { DiaryProvider } from '@/contexts/DiaryContext';
 import { OrdersProvider } from '@/contexts/OrdersContext';
+import { DriveBackupProvider } from '@/contexts/DriveBackupContext';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -73,9 +74,11 @@ export default function RootLayout() {
             <KeyboardProvider>
               <AppProvider>
                 <DiaryProvider>
-                  <OrdersProvider>
-                    <RootLayoutNav />
-                  </OrdersProvider>
+                  <DriveBackupProvider>
+                    <OrdersProvider>
+                      <RootLayoutNav />
+                    </OrdersProvider>
+                  </DriveBackupProvider>
                 </DiaryProvider>
               </AppProvider>
             </KeyboardProvider>

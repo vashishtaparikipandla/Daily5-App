@@ -29,6 +29,11 @@ interface DiaryContextValue {
   performBackup: () => Promise<boolean>;
   /** Restore books from the local backup file. Returns true on success. */
   restoreFromBackup: () => Promise<boolean>;
+  /**
+   * Restore books from already-decrypted data (e.g. from a Drive download).
+   * Saves to AsyncStorage and updates in-memory state.
+   */
+  restoreFromData: (data: Book[]) => Promise<boolean>;
   /** ISO string of the last successful backup, or null. */
   lastBackupTime: Date | null;
   /** Refresh the last backup time display. */
@@ -131,6 +136,18 @@ export function DiaryProvider({ children }: { children: React.ReactNode }) {
       const booksData = data as Book[];
       await saveBooks(booksData);
       setBooks(booksData);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  /** Restore books from already-decrypted data (e.g. downloaded from Drive). */
+  async function restoreFromData(data: Book[]): Promise<boolean> {
+    try {
+      if (!data || !Array.isArray(data) || data.length === 0) return false;
+      await saveBooks(data);
+      setBooks(data);
       return true;
     } catch {
       return false;
@@ -241,6 +258,7 @@ export function DiaryProvider({ children }: { children: React.ReactNode }) {
       totalMoments, totalDays,
       performBackup: () => performBackup(),
       restoreFromBackup,
+      restoreFromData,
       lastBackupTime,
       refreshBackupTime,
     }}>
