@@ -1,0 +1,53 @@
+name: Deploy Daily 5 Web to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Required for peaceiris/actions-gh-pages to write the gh-pages branch
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build web app
+        run: pnpm --filter @workspace/daily5 run build
+        env:
+          # PORT is required by vite.config.ts validation; build ignores the
+          # value (it only affects the dev server) but the env var must exist.
+          PORT: '3000'
+          # Sets the Vite `base` to the GitHub Pages subpath so all assets
+          # resolve correctly under https://<user>.github.io/Daily5-App/
+          BASE_PATH: '/Daily5-App/'
+
+      - name: Add .nojekyll (prevents GitHub Pages stripping _-prefixed files)
+        run: touch artifacts/daily5/dist/public/.nojekyll
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./artifacts/daily5/dist/public
+          # Keep .nojekyll in the published tree
+          keep_files: false
