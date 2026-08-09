@@ -1,0 +1,24 @@
+kind = "mobile"
+previewPath = "/daily5-android/"
+title = "Daily 5 — Android"
+description = "A fully offline personal memory diary for Android. Log up to 5 moments each day, build monthly books, and rediscover past memories. Stores everything locally on the device."
+version = "1.0.0"
+id = "artifacts/daily5-android"
+router = "expo-domain"
+
+[[services]]
+name = "expo"
+ensurePreviewReachable = "/status"
+paths = [ "/daily5-android/" ]
+localPort = 19309
+
+[services.development]
+run = "pnpm --filter @workspace/daily5-android run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/daily5-android", "run", "build" ]
+run = [ "pnpm", "--filter", "@workspace/daily5-android", "run", "serve" ]
+
+[services.env]
+PORT = "19309"
+BASE_PATH = "/daily5-android/"
