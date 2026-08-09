@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Appearance } from 'react-native';
 import { KEYS } from '@/lib/storage';
+import { deleteBackupFile } from '@/lib/backup';
 
 export interface AppUser {
   name: string;
@@ -18,6 +19,7 @@ interface AppContextValue {
   user: AppUser | null;
   theme: 'light' | 'dark' | 'system';
   biometricEnabled: boolean;
+  backupEnabled: boolean;
   signIn: (user: AppUser) => Promise<void>;
   signOut: () => Promise<void>;
   completeOnboarding: () => Promise<void>;
@@ -26,6 +28,8 @@ interface AppContextValue {
   setTheme: (t: 'light' | 'dark' | 'system') => Promise<void>;
   /** Enable/disable biometric. Enabling requires a live auth challenge first. */
   setBiometricEnabled: (v: boolean) => Promise<boolean>;
+  /** Enable/disable encrypted cloud backup. */
+  setBackupEnabled: (v: boolean) => Promise<void>;
   updateUser: (updates: Partial<AppUser>) => Promise<void>;
   deleteAccount: () => Promise<void>;
 }
@@ -38,6 +42,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [hasOnboarded, setHasOnboarded] = useState(false);
   const [theme, setThemeState] = useState<'light' | 'dark' | 'system'>('light');
   const [biometricEnabled, setBiometricState] = useState(false);
+  const [backupEnabled, setBackupState] = useState(false);
   // isUnlocked: true when biometric is disabled OR after a successful biometric challenge
   const [isUnlocked, setIsUnlocked] = useState(false);
 
@@ -45,11 +50,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   async function load() {
     try {
-      const [userJson, onboarded, savedTheme, biometric] = await Promise.all([
+      const [userJson, onboarded, savedTheme, biometric, backup] = await Promise.all([
         AsyncStorage.getItem(KEYS.AUTH_USER),
         AsyncStorage.getItem(KEYS.ONBOARDED),
         AsyncStorage.getItem(KEYS.THEME),
         AsyncStorage.getItem(KEYS.BIOMETRIC),
+        AsyncStorage.getItem(KEYS.BACKUP_ENABLED),
       ]);
       const hasUser = !!userJson;
       const bioEnabled = biometric === 'true';
@@ -62,6 +68,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         applyTheme(t);
       }
       setBiometricState(bioEnabled);
+      setBackupState(backup === 'true');
       // If no user or biometric not enabled, the app is already "unlocked"
       setIsUnlocked(!hasUser || !bioEnabled);
     } catch {}
@@ -141,19 +148,27 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setUser(updated);
   }
 
+  async function setBackupEnabled(v: boolean): Promise<void> {
+    await AsyncStorage.setItem(KEYS.BACKUP_ENABLED, v ? 'true' : 'false');
+    setBackupState(v);
+  }
+
   async function deleteAccount() {
     await AsyncStorage.multiRemove(Object.values(KEYS));
+    // Also remove the backup file so deleted accounts don't leave data behind
+    try { await deleteBackupFile(); } catch {}
     setUser(null);
     setHasOnboarded(false);
     setIsUnlocked(false);
+    setBackupState(false);
   }
 
   return (
     <AppContext.Provider value={{
       isLoading, isAuthenticated: !!user, hasOnboarded,
-      isUnlocked, user, theme, biometricEnabled,
+      isUnlocked, user, theme, biometricEnabled, backupEnabled,
       signIn, signOut, completeOnboarding,
-      unlock, setTheme, setBiometricEnabled,
+      unlock, setTheme, setBiometricEnabled, setBackupEnabled,
       updateUser, deleteAccount,
     }}>
       {children}

@@ -39,6 +39,7 @@ function RootLayoutNav() {
       <Stack.Screen name="profile/notifications" options={{ headerShown: false }} />
       <Stack.Screen name="profile/appearance" options={{ headerShown: false }} />
       <Stack.Screen name="profile/privacy" options={{ headerShown: false }} />
+      <Stack.Screen name="profile/backup-key" options={{ headerShown: false }} />
       <Stack.Screen name="profile/orders" options={{ headerShown: false }} />
       <Stack.Screen name="profile/help" options={{ headerShown: false }} />
       <Stack.Screen name="order-flow" options={{ headerShown: false }} />
