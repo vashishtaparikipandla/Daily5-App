@@ -104,10 +104,10 @@ function BookViewerContent() {
           {monthLabel(book.monthKey)}
         </Text>
         <TouchableOpacity
-          onPress={() => Alert.alert('Print & Order', 'Coming soon.')}
+          onPress={() => router.push({ pathname: '/order-flow', params: { monthKey: book.monthKey } } as any)}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Ionicons name="print-outline" size={22} color={colors.mutedForeground} />
+          <Ionicons name="print-outline" size={22} color={colors.primary} />
         </TouchableOpacity>
       </View>
 

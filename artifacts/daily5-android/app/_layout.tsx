@@ -19,6 +19,7 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { AppProvider } from '@/contexts/AppContext';
 import { DiaryProvider } from '@/contexts/DiaryContext';
+import { OrdersProvider } from '@/contexts/OrdersContext';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -40,6 +41,7 @@ function RootLayoutNav() {
       <Stack.Screen name="profile/privacy" options={{ headerShown: false }} />
       <Stack.Screen name="profile/orders" options={{ headerShown: false }} />
       <Stack.Screen name="profile/help" options={{ headerShown: false }} />
+      <Stack.Screen name="order-flow" options={{ headerShown: false }} />
     </Stack>
   );
 }
@@ -70,7 +72,9 @@ export default function RootLayout() {
             <KeyboardProvider>
               <AppProvider>
                 <DiaryProvider>
-                  <RootLayoutNav />
+                  <OrdersProvider>
+                    <RootLayoutNav />
+                  </OrdersProvider>
                 </DiaryProvider>
               </AppProvider>
             </KeyboardProvider>
