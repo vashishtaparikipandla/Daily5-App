@@ -45,7 +45,11 @@ export default function AuthScreen() {
         headers: { Authorization: `Bearer ${token}` },
       });
       const user = await res.json();
-      await signIn({ name: user.name || 'User', email: user.email || '', avatar: user.picture });
+      // Pass the access token so AppContext can persist it for server-side auth
+      await signIn(
+        { name: user.name || 'User', email: user.email || '', avatar: user.picture },
+        token,
+      );
       router.replace('/biometric-setup');
     } catch {
       setError('Could not fetch profile. Try demo mode below.');
