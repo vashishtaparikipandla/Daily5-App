@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity, Platform,
-  FlatList, ActivityIndicator,
+  FlatList, ActivityIndicator, RefreshControl,
 } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -94,8 +94,18 @@ function OrderCard({ order, colors }: { order: PrintOrder; colors: ReturnType<ty
 function OrdersContent() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
+  const { orders, loading, refreshOrders } = useOrders();
+  const [refreshing, setRefreshing] = React.useState(false);
   const topPad = insets.top + (Platform.OS === 'web' ? 67 : 0);
-  const { orders, loading } = useOrders();
+
+  const handleRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await refreshOrders();
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refreshOrders]);
 
   return (
     <View style={[styles.root, { backgroundColor: colors.background, paddingTop: topPad }]}>
@@ -104,7 +114,9 @@ function OrdersContent() {
           <Ionicons name="arrow-back" size={24} color={colors.foreground} />
         </TouchableOpacity>
         <Text style={[styles.title, { color: colors.foreground, fontFamily: 'PlayfairDisplay_700Bold' }]}>Orders</Text>
-        <View style={{ width: 24 }} />
+        <TouchableOpacity onPress={handleRefresh} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
+          <Ionicons name="refresh-outline" size={22} color={colors.foreground} />
+        </TouchableOpacity>
       </View>
 
       {loading ? (
@@ -127,6 +139,13 @@ function OrdersContent() {
           keyExtractor={o => o.id}
           contentContainerStyle={styles.list}
           showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={handleRefresh}
+              tintColor={colors.primary}
+            />
+          }
           renderItem={({ item }) => <OrderCard order={item} colors={colors} />}
           ListHeaderComponent={
             <Text style={[styles.listHeader, { color: colors.tertiary }]}>

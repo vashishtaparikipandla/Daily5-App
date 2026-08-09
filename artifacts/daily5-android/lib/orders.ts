@@ -3,6 +3,7 @@ import { uid } from './data';
 
 export type OrderStatus =
   | 'pending'
+  | 'payment_pending'
   | 'processing'
   | 'printing'
   | 'shipped'
@@ -33,7 +34,7 @@ export interface PrintOrder {
   estimatedDelivery?: string; // ISO date string
 }
 
-const FORMAT_VERSION = 1;
+const FORMAT_VERSION = 2;
 
 interface StoredOrders {
   v: number;
@@ -54,7 +55,8 @@ export async function loadOrders(userEmail: string): Promise<PrintOrder[]> {
     const raw = await AsyncStorage.getItem(ordersKey(userEmail));
     if (!raw) return [];
     const parsed: StoredOrders = JSON.parse(raw);
-    if (parsed.v !== FORMAT_VERSION) return [];
+    // Accept v1 and v2
+    if (parsed.v !== FORMAT_VERSION && parsed.v !== 1) return [];
     return parsed.orders ?? [];
   } catch {
     return [];
@@ -212,17 +214,21 @@ export function createOrder(
   bookTitle: string,
   pageCount: number,
   shippingAddress: ShippingAddress,
+  /** Pre-generated order ID (when the ID was already sent to the backend) */
+  existingId?: string,
+  /** Initial status from backend confirmation */
+  initialStatus?: OrderStatus,
 ): PrintOrder {
   const now = new Date().toISOString();
   const delivery = new Date();
   delivery.setDate(delivery.getDate() + 10);
 
   return {
-    id: uid(),
+    id: existingId ?? uid(),
     bookMonthKey,
     bookTitle,
     pageCount,
-    status: 'processing',
+    status: initialStatus ?? 'processing',
     shippingAddress,
     totalCents: 2998,          // $24.99 book + $4.99 shipping
     createdAt: now,
@@ -235,12 +241,13 @@ export function createOrder(
 
 export function formatOrderStatus(status: OrderStatus): string {
   switch (status) {
-    case 'pending':     return 'Pending';
-    case 'processing':  return 'Processing';
-    case 'printing':    return 'Printing';
-    case 'shipped':     return 'Shipped';
-    case 'delivered':   return 'Delivered';
-    case 'cancelled':   return 'Cancelled';
+    case 'pending':          return 'Pending';
+    case 'payment_pending':  return 'Awaiting Payment';
+    case 'processing':       return 'Processing';
+    case 'printing':         return 'Printing';
+    case 'shipped':          return 'Shipped';
+    case 'delivered':        return 'Delivered';
+    case 'cancelled':        return 'Cancelled';
   }
 }
 
@@ -249,12 +256,13 @@ export function orderStatusColor(
   colors: { primary: string; tertiary: string; destructive: string; foreground: string },
 ) {
   switch (status) {
-    case 'delivered': return colors.primary;
-    case 'shipped':   return '#4CAF50';
-    case 'printing':  return '#FF9800';
-    case 'processing':return colors.foreground;
-    case 'pending':   return colors.tertiary;
-    case 'cancelled': return colors.destructive;
+    case 'delivered':       return colors.primary;
+    case 'shipped':         return '#4CAF50';
+    case 'printing':        return '#FF9800';
+    case 'processing':      return colors.foreground;
+    case 'pending':         return colors.tertiary;
+    case 'payment_pending': return colors.tertiary;
+    case 'cancelled':       return colors.destructive;
   }
 }
 

@@ -5,6 +5,7 @@ import {
 } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import * as WebBrowser from 'expo-web-browser';
 import { useColors } from '@/hooks/useColors';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ProtectedScreen } from '@/components/ProtectedScreen';
@@ -12,6 +13,8 @@ import { useOrders } from '@/contexts/OrdersContext';
 import { useDiary } from '@/contexts/DiaryContext';
 import { monthLabel, estimatedPages } from '@/lib/data';
 import { ShippingAddress, formatTotalCents, formatDeliveryDate } from '@/lib/orders';
+import { createCheckoutSession, uploadOrderPdf, pollOrderStatus, type CheckoutSessionResponse } from '@/lib/api-client';
+import { generateBookPdf } from '@/lib/pdfExport';
 import type { PrintOrder } from '@/lib/orders';
 
 type Step = 'preview' | 'address' | 'payment' | 'confirmation';
@@ -30,10 +33,7 @@ function StepDots({ step, colors }: { step: Step; colors: ReturnType<typeof useC
       {steps.slice(0, 3).map((s, i) => (
         <View
           key={s}
-          style={[
-            styles.dot,
-            { backgroundColor: i <= idx ? colors.primary : colors.border },
-          ]}
+          style={[styles.dot, { backgroundColor: i <= idx ? colors.primary : colors.border }]}
         />
       ))}
     </View>
@@ -43,14 +43,8 @@ function StepDots({ step, colors }: { step: Step; colors: ReturnType<typeof useC
 // ─── Step 1: Preview ─────────────────────────────────────────────────────────
 
 function PreviewStep({
-  monthKey,
-  colors,
-  onNext,
-}: {
-  monthKey: string;
-  colors: ReturnType<typeof useColors>;
-  onNext: () => void;
-}) {
+  monthKey, colors, onNext,
+}: { monthKey: string; colors: ReturnType<typeof useColors>; onNext: () => void }) {
   const { getBook } = useDiary();
   const book = getBook(monthKey);
   const pages = estimatedPages(monthKey);
@@ -58,7 +52,6 @@ function PreviewStep({
 
   return (
     <ScrollView contentContainerStyle={styles.stepContent} showsVerticalScrollIndicator={false}>
-      {/* Book card */}
       <View style={[styles.bookCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
         <View style={[styles.bookSpine, { backgroundColor: colors.primary }]} />
         <View style={styles.bookInfo}>
@@ -71,7 +64,6 @@ function PreviewStep({
         </View>
       </View>
 
-      {/* What you get */}
       <View style={[styles.section, { backgroundColor: colors.card, borderColor: colors.border }]}>
         <Text style={[styles.sectionLabel, { color: colors.tertiary }]}>WHAT YOU GET</Text>
         {[
@@ -87,7 +79,6 @@ function PreviewStep({
         ))}
       </View>
 
-      {/* Pricing */}
       <View style={[styles.section, { backgroundColor: colors.card, borderColor: colors.border }]}>
         <Text style={[styles.sectionLabel, { color: colors.tertiary }]}>PRICING</Text>
         <View style={styles.priceRow}>
@@ -119,11 +110,7 @@ function PreviewStep({
 // ─── Step 2: Shipping address ─────────────────────────────────────────────────
 
 function AddressStep({
-  colors,
-  address,
-  onChange,
-  onNext,
-  onBack,
+  colors, address, onChange, onNext, onBack,
 }: {
   colors: ReturnType<typeof useColors>;
   address: Partial<ShippingAddress>;
@@ -131,12 +118,7 @@ function AddressStep({
   onNext: () => void;
   onBack: () => void;
 }) {
-  function field(
-    label: string,
-    key: keyof ShippingAddress,
-    placeholder: string,
-    opts?: { half?: boolean },
-  ) {
+  function field(label: string, key: keyof ShippingAddress, placeholder: string, opts?: { half?: boolean }) {
     return (
       <View style={[styles.fieldWrap, opts?.half && { flex: 1 }]}>
         <Text style={[styles.fieldLabel, { color: colors.tertiary }]}>{label}</Text>
@@ -187,12 +169,7 @@ function AddressStep({
 // ─── Step 3: Payment ──────────────────────────────────────────────────────────
 
 function PaymentStep({
-  colors,
-  monthKey,
-  address,
-  onPlace,
-  onBack,
-  placing,
+  colors, monthKey, address, onPlace, onBack, placing, placingMessage,
 }: {
   colors: ReturnType<typeof useColors>;
   monthKey: string;
@@ -200,14 +177,13 @@ function PaymentStep({
   onPlace: () => void;
   onBack: () => void;
   placing: boolean;
+  placingMessage: string;
 }) {
-  // Estimated delivery
   const delivery = new Date();
   delivery.setDate(delivery.getDate() + 10);
 
   return (
     <ScrollView contentContainerStyle={styles.stepContent} showsVerticalScrollIndicator={false}>
-      {/* Order summary */}
       <View style={[styles.section, { backgroundColor: colors.card, borderColor: colors.border }]}>
         <Text style={[styles.sectionLabel, { color: colors.tertiary }]}>ORDER SUMMARY</Text>
         <View style={styles.priceRow}>
@@ -224,7 +200,6 @@ function PaymentStep({
         </View>
       </View>
 
-      {/* Shipping address */}
       <View style={[styles.section, { backgroundColor: colors.card, borderColor: colors.border }]}>
         <Text style={[styles.sectionLabel, { color: colors.tertiary }]}>SHIPPING TO</Text>
         <Text style={[styles.addressLine, { color: colors.foreground }]}>{address.name}</Text>
@@ -233,21 +208,23 @@ function PaymentStep({
         <Text style={[styles.addressLine, { color: colors.mutedForeground }]}>{address.country}</Text>
       </View>
 
-      {/* Payment method */}
       <View style={[styles.section, { backgroundColor: colors.card, borderColor: colors.border }]}>
         <Text style={[styles.sectionLabel, { color: colors.tertiary }]}>PAYMENT</Text>
         <View style={styles.featureRow}>
           <Ionicons name="card-outline" size={20} color={colors.primary} />
-          <View>
-            <Text style={[styles.featureText, { color: colors.foreground }]}>Test mode — no charge</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={[styles.featureText, { color: colors.foreground }]}>Secure card payment via Stripe</Text>
             <Text style={[styles.smallNote, { color: colors.mutedForeground }]}>
-              Payment integration coming soon. Orders are tracked locally.
+              You'll be taken to Stripe's secure checkout. Your card details are never stored by Daily 5.
             </Text>
           </View>
         </View>
+        <View style={[styles.featureRow, { marginTop: 4 }]}>
+          <Ionicons name="lock-closed-outline" size={16} color={colors.mutedForeground} />
+          <Text style={[styles.smallNote, { color: colors.mutedForeground }]}>256-bit SSL encrypted · PCI-DSS compliant</Text>
+        </View>
       </View>
 
-      {/* Estimated delivery */}
       <View style={[styles.deliveryBanner, { backgroundColor: colors.primary + '18', borderColor: colors.primary + '40' }]}>
         <Ionicons name="time-outline" size={16} color={colors.primary} />
         <Text style={[styles.deliveryText, { color: colors.primary }]}>
@@ -264,11 +241,17 @@ function PaymentStep({
           <ActivityIndicator color={colors.primaryForeground} />
         ) : (
           <>
-            <Ionicons name="checkmark-circle-outline" size={18} color={colors.primaryForeground} />
-            <Text style={[styles.primaryBtnText, { color: colors.primaryForeground }]}>Place Order</Text>
+            <Ionicons name="card-outline" size={18} color={colors.primaryForeground} />
+            <Text style={[styles.primaryBtnText, { color: colors.primaryForeground }]}>Pay {formatTotalCents(TOTAL_CENTS)}</Text>
           </>
         )}
       </TouchableOpacity>
+
+      {placing && (
+        <Text style={[styles.placingNote, { color: colors.mutedForeground }]}>
+          {placingMessage}
+        </Text>
+      )}
     </ScrollView>
   );
 }
@@ -276,14 +259,8 @@ function PaymentStep({
 // ─── Step 4: Confirmation ─────────────────────────────────────────────────────
 
 function ConfirmationStep({
-  order,
-  colors,
-  onDone,
-}: {
-  order: PrintOrder;
-  colors: ReturnType<typeof useColors>;
-  onDone: () => void;
-}) {
+  order, colors, onDone,
+}: { order: PrintOrder; colors: ReturnType<typeof useColors>; onDone: () => void }) {
   return (
     <ScrollView contentContainerStyle={[styles.stepContent, { alignItems: 'center' }]} showsVerticalScrollIndicator={false}>
       <View style={[styles.successIcon, { backgroundColor: colors.primary + '18' }]}>
@@ -326,7 +303,7 @@ function ConfirmationStep({
       </View>
 
       <Text style={[styles.confNote, { color: colors.mutedForeground }]}>
-        You can track your order in Profile → Orders.
+        Track your order in Profile → Orders.
       </Text>
 
       <TouchableOpacity
@@ -352,6 +329,7 @@ function OrderFlowContent() {
   const [step, setStep] = useState<Step>('preview');
   const [address, setAddress] = useState<Partial<ShippingAddress>>({ country: 'US' });
   const [placing, setPlacing] = useState(false);
+  const [placingMessage, setPlacingMessage] = useState('');
   const [confirmedOrder, setConfirmedOrder] = useState<PrintOrder | null>(null);
 
   const monthKey = mk ?? '';
@@ -373,26 +351,101 @@ function OrderFlowContent() {
 
   async function handlePlaceOrder() {
     if (!book) return;
+    const addr = address as ShippingAddress;
     setPlacing(true);
+    setPlacingMessage('Creating your order…');
+
     try {
-      const order = await placeOrder(
+      // 1. Create Stripe Checkout Session — server generates the order UUID
+      let session: CheckoutSessionResponse;
+      try {
+        session = await createCheckoutSession({
+          bookMonthKey: monthKey,
+          bookTitle: monthLabel(monthKey),
+          pageCount: estimatedPages(monthKey),
+          shippingName: addr.name,
+          shippingLine1: addr.line1,
+          shippingLine2: addr.line2,
+          shippingCity: addr.city,
+          shippingState: addr.state,
+          shippingZip: addr.zip,
+          shippingCountry: addr.country,
+        });
+      } catch (e: any) {
+        const isNotConfigured = e?.message?.includes('Payment service not configured')
+          || e?.message?.includes('503');
+        Alert.alert(
+          'Could not start checkout',
+          isNotConfigured
+            ? 'Payment is not yet configured. Please try again later.'
+            : 'Could not connect to the payment server. Check your connection and try again.',
+        );
+        return;
+      }
+
+      // 2. Generate the PDF locally and upload to the server so the Stripe
+      //    payment webhook can immediately submit the print job to Gelato.
+      //    The pdfUploadToken scopes this upload to this device/order only.
+      //    Best-effort — a failure here does not block payment.
+      setPlacingMessage('Preparing your book for print…');
+      try {
+        const localPdfUri = await generateBookPdf(book);
+        await uploadOrderPdf(localPdfUri, session.orderId, session.pdfUploadToken);
+      } catch (pdfErr) {
+        // Log but don't block checkout — the PDF upload endpoint can be retried,
+        // and the Stripe webhook will trigger Gelato once both payment and PDF are present.
+        console.warn('PDF upload failed; print submission will need manual trigger:', pdfErr);
+      }
+
+      // 3. Open Stripe's hosted checkout in the in-app browser
+      setPlacingMessage('Opening secure checkout…');
+      await WebBrowser.openBrowserAsync(session.url, {
+        presentationStyle: WebBrowser.WebBrowserPresentationStyle.FULL_SCREEN,
+      });
+
+      // 4. Browser closed — poll for payment confirmation.
+      //    The Stripe webhook confirms payment and submits to Gelato server-side.
+      setPlacingMessage('Confirming payment…');
+      const confirmedApiOrder = await pollOrderStatus(session.orderId, 60_000, 2_000);
+
+      if (!confirmedApiOrder) {
+        // Timed out — browser was likely dismissed before completing payment.
+        // Do NOT advance to confirmation; leave order as payment_pending.
+        Alert.alert(
+          'Payment not confirmed',
+          'We could not confirm your payment. If you completed checkout, check Profile → Orders in a few minutes — it may still appear once Stripe confirms it.',
+        );
+        return;
+      }
+
+      if (confirmedApiOrder.status === 'cancelled') {
+        Alert.alert('Payment cancelled', 'Your payment was cancelled. No charge was made.');
+        return;
+      }
+
+      // 5. Payment confirmed — save to local storage and show confirmation screen
+      const localOrder = await placeOrder(
         monthKey,
         monthLabel(monthKey),
         estimatedPages(monthKey),
-        address as ShippingAddress,
+        addr,
+        session.orderId,                          // use server-generated UUID
+        confirmedApiOrder.status as any,
       );
-      setConfirmedOrder(order);
+      setConfirmedOrder(localOrder);
       setStep('confirmation');
-    } catch (e) {
-      Alert.alert('Error', 'Could not place order. Please try again.');
+
+    } catch (e: any) {
+      console.error('Order flow error:', e);
+      Alert.alert('Error', 'Something went wrong. Please try again.');
     } finally {
       setPlacing(false);
+      setPlacingMessage('');
     }
   }
 
   return (
     <View style={[styles.root, { backgroundColor: colors.background }]}>
-      {/* Header */}
       <View style={[styles.header, { paddingTop: topPad, borderBottomColor: colors.border }]}>
         {step !== 'confirmation' ? (
           <TouchableOpacity onPress={handleBack} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
@@ -429,6 +482,7 @@ function OrderFlowContent() {
           onPlace={handlePlaceOrder}
           onBack={() => setStep('address')}
           placing={placing}
+          placingMessage={placingMessage}
         />
       )}
       {step === 'confirmation' && confirmedOrder && (
@@ -454,13 +508,11 @@ const styles = StyleSheet.create({
   root: { flex: 1 },
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: 20, paddingBottom: 12,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    paddingHorizontal: 20, paddingBottom: 12, borderBottomWidth: StyleSheet.hairlineWidth,
   },
   headerTitle: { fontSize: 18, letterSpacing: 0.2 },
   stepDots: { flexDirection: 'row', gap: 6, alignSelf: 'center', paddingVertical: 14 },
   dot: { width: 8, height: 8, borderRadius: 4 },
-
   stepContent: { padding: 20, gap: 16, paddingBottom: 40 },
 
   bookCard: {
@@ -474,14 +526,12 @@ const styles = StyleSheet.create({
 
   section: {
     borderRadius: 14, borderWidth: StyleSheet.hairlineWidth,
-    paddingHorizontal: 16, paddingTop: 12, paddingBottom: 4,
-    gap: 2,
+    paddingHorizontal: 16, paddingTop: 12, paddingBottom: 4, gap: 2,
   },
   sectionLabel: {
     fontSize: 10, fontFamily: 'Inter_500Medium', letterSpacing: 1,
     textTransform: 'uppercase', marginBottom: 8,
   },
-
   featureRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 10, paddingVertical: 6 },
   featureText: { fontSize: 14, fontFamily: 'Inter_400Regular', flex: 1 },
   smallNote: { fontSize: 11, fontFamily: 'Inter_400Regular', marginTop: 2, flexShrink: 1 },
@@ -493,6 +543,7 @@ const styles = StyleSheet.create({
   totalLabel: { fontSize: 15 },
   totalValue: { fontSize: 15 },
 
+  halfRow: { flexDirection: 'row' },
   fieldWrap: { gap: 4 },
   fieldLabel: { fontSize: 11, fontFamily: 'Inter_500Medium', letterSpacing: 0.5, textTransform: 'uppercase' },
   input: {
@@ -500,28 +551,25 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14, paddingVertical: 12,
     fontSize: 15, fontFamily: 'Inter_400Regular',
   },
-  halfRow: { flexDirection: 'row', gap: 0 },
 
   addressLine: { fontSize: 14, fontFamily: 'Inter_400Regular', paddingVertical: 2 },
 
   deliveryBanner: {
     flexDirection: 'row', alignItems: 'center', gap: 8,
-    borderRadius: 10, borderWidth: 1, padding: 12,
+    paddingHorizontal: 14, paddingVertical: 12, borderRadius: 10, borderWidth: 1,
   },
   deliveryText: { fontSize: 13, fontFamily: 'Inter_500Medium', flex: 1 },
 
+  placingNote: { textAlign: 'center', fontSize: 12, fontFamily: 'Inter_400Regular', marginTop: -8 },
+
   primaryBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    gap: 8, paddingVertical: 15, borderRadius: 14,
-    marginTop: 4,
+    gap: 8, borderRadius: 14, paddingVertical: 16, marginTop: 4,
   },
   primaryBtnText: { fontSize: 16, fontFamily: 'Inter_600SemiBold' },
 
-  successIcon: {
-    width: 96, height: 96, borderRadius: 48,
-    alignItems: 'center', justifyContent: 'center', marginBottom: 8,
-  },
-  confTitle: { fontSize: 26, letterSpacing: 0.3, textAlign: 'center' },
-  confSub: { fontSize: 15, fontFamily: 'Inter_400Regular', textAlign: 'center', lineHeight: 22, paddingHorizontal: 12 },
-  confNote: { fontSize: 12, fontFamily: 'Inter_400Regular', textAlign: 'center', marginTop: -8 },
+  successIcon: { width: 96, height: 96, borderRadius: 48, alignItems: 'center', justifyContent: 'center', marginBottom: 8 },
+  confTitle: { fontSize: 26, letterSpacing: 0.2, textAlign: 'center' },
+  confSub: { fontSize: 15, fontFamily: 'Inter_400Regular', textAlign: 'center', lineHeight: 22, marginBottom: 4 },
+  confNote: { fontSize: 12, fontFamily: 'Inter_400Regular', textAlign: 'center', marginTop: 4, marginBottom: 8 },
 });

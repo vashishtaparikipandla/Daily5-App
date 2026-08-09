@@ -1,0 +1,1 @@
+- [Stripe + Gelato print integration](print-integration.md) — Stripe Checkout hosted page (not native SDK) + Gelato REST API; key security/idempotency constraints documented.

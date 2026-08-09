@@ -342,14 +342,21 @@ ${pages}
 // ─── Public API ───────────────────────────────────────────────────────────────
 
 /**
+ * Generate a PDF for the given book and return its local file URI.
+ * The caller is responsible for any further sharing or upload.
+ * expo-print writes to a cache temp file; it persists until the OS clears it.
+ */
+export async function generateBookPdf(book: Book): Promise<string> {
+  const html = buildHtml(book);
+  const { uri } = await Print.printToFileAsync({ html, base64: false });
+  return uri;
+}
+
+/**
  * Generate and share a PDF for the given book.
- * Returns the URI of the generated PDF file.
  */
 export async function exportBookAsPdf(book: Book): Promise<void> {
-  const html = buildHtml(book);
-
-  // Generate PDF (expo-print writes to a temp file and returns its URI)
-  const { uri } = await Print.printToFileAsync({ html, base64: false });
+  const uri = await generateBookPdf(book);
 
   // Share via native sheet (works on Android and iOS)
   const canShare = await Sharing.isAvailableAsync();

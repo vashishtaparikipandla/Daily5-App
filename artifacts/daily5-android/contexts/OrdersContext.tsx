@@ -12,19 +12,13 @@
  *   loads the new account's local cache from AsyncStorage immediately.
  *
  *   Effect 2 (deps: [userEmail, accessToken, loading]) — server sync. Fires
- *   whenever both identity AND token are available (handles the cold-start case
- *   where the token arrives from SecureStore after the user is already set).
- *   A `lastSyncKey` ref prevents redundant syncs for the same (email, token).
+ *   whenever both identity AND token are available. A `lastSyncKey` ref
+ *   prevents redundant syncs for the same (email, token) pair.
  *
  * Offline durability:
  *   placeOrder writes locally first + best-effort POST. fullSync (on every
- *   sign-in or token-arrival) uploads each locally-stored order the server
- *   hasn't seen, then fetches the canonical list and merges.
- *
- * Server auth:
- *   All API calls use Authorization: Bearer <accessToken>. The server verifies
- *   the token and derives userEmail from it — never trusted from the client.
- *   Demo accounts (no token) are local-only.
+ *   sign-in or token-arrival) uploads locally-stored orders the server hasn't
+ *   seen, then fetches the canonical list and merges.
  */
 
 import React, {
@@ -33,9 +27,10 @@ import React, {
 import {
   loadOrders, saveOrders, createOrder, syncOrderToServer, fullSync,
   migrateLegacyOrders,
-  PrintOrder, ShippingAddress,
+  type PrintOrder, type ShippingAddress, type OrderStatus,
 } from '@/lib/orders';
 import { useApp } from '@/contexts/AppContext';
+import { fetchOrdersByIds, type ApiOrder } from '@/lib/api-client';
 
 interface OrdersContextValue {
   orders: PrintOrder[];
@@ -48,11 +43,40 @@ interface OrdersContextValue {
     bookTitle: string,
     pageCount: number,
     address: ShippingAddress,
+    /** Pre-generated order ID from the server (e.g. from Stripe checkout session) */
+    orderId?: string,
+    /** Initial status from backend confirmation */
+    initialStatus?: OrderStatus,
   ) => Promise<PrintOrder>;
   getOrdersForBook: (monthKey: string) => PrintOrder[];
+  /** Pull latest status for all known orders from the backend. */
+  refreshOrders: () => Promise<void>;
 }
 
 const OrdersContext = createContext<OrdersContextValue | null>(null);
+
+/**
+ * Merge remote API status updates into the local order list.
+ *
+ * The public GET /orders/:id endpoint returns only non-PII status fields
+ * (id, status, trackingNumber, estimatedDelivery, etc.) — NOT shipping address.
+ * We preserve every field of the local order and only overwrite the fields
+ * that the API actually returns.
+ */
+function mergeStatusUpdates(local: PrintOrder[], remote: ApiOrder[]): PrintOrder[] {
+  const remoteById = new Map(remote.map(r => [r.id, r]));
+  return local.map(localOrder => {
+    const update = remoteById.get(localOrder.id);
+    if (!update) return localOrder;
+    return {
+      ...localOrder,
+      status: (update.status as OrderStatus) ?? localOrder.status,
+      trackingNumber: update.trackingNumber ?? localOrder.trackingNumber,
+      estimatedDelivery: update.estimatedDelivery ?? localOrder.estimatedDelivery,
+      updatedAt: update.updatedAt,
+    };
+  });
+}
 
 export function OrdersProvider({ children }: { children: React.ReactNode }) {
   const { user, accessToken } = useApp();
@@ -63,21 +87,19 @@ export function OrdersProvider({ children }: { children: React.ReactNode }) {
   const [syncing, setSyncing] = useState(false);
 
   /**
-   * Set SYNCHRONOUSLY on identity change. Every async callback captures the
-   * email it was started for and bails if this ref no longer matches.
+   * Updated SYNCHRONOUSLY on identity change. Every async callback captures
+   * the email it was started for and bails if this ref no longer matches.
    */
   const activeEmailRef = useRef<string | null>(null);
 
   /**
-   * Deduplicate server syncs. Stores the last "<email>:<token>" key that a
-   * sync was started for. Prevents double-syncing when Effect 2 re-fires due
-   * to `loading` transitioning to false while email+token are unchanged.
+   * Deduplicates server syncs. Stores the last "<email>:<token>" key that a
+   * sync was started for, preventing double-syncing when Effect 2 re-fires
+   * due to `loading` transitioning to false while email+token are unchanged.
    */
   const lastSyncKey = useRef<string | null>(null);
 
   // ── Effect 1: Identity reset ─────────────────────────────────────────────
-  // Runs when the signed-in account changes. Clears state synchronously, then
-  // loads the new account's local cache (no server call here).
   useEffect(() => {
     const email = userEmail;
     activeEmailRef.current = email; // synchronous — guards all subsequent awaits
@@ -85,7 +107,7 @@ export function OrdersProvider({ children }: { children: React.ReactNode }) {
     setOrders([]);
     setLoading(true);
     setSyncing(false);
-    lastSyncKey.current = null; // reset so Effect 2 will sync for the new identity
+    lastSyncKey.current = null;
 
     if (!email) {
       setLoading(false);
@@ -97,27 +119,22 @@ export function OrdersProvider({ children }: { children: React.ReactNode }) {
       .catch(() => {})
       .then(() => loadOrders(email))
       .then(local => {
-        if (activeEmailRef.current !== email) return; // identity changed mid-load
+        if (activeEmailRef.current !== email) return;
         setOrders(local);
         setLoading(false);
       });
   }, [userEmail]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Effect 2: Server sync ────────────────────────────────────────────────
-  // Runs when identity, token, or loading state changes. Handles:
-  //   • Fresh sign-in (token set at same time as email)
-  //   • Cold-start (token arrives from SecureStore after user is already set)
-  //   • Token refresh (new token for same identity)
   useEffect(() => {
     const email = userEmail;
     const token = accessToken;
-    if (!email || !token || loading) return; // wait for local load to finish
+    if (!email || !token || loading) return;
 
     const syncKey = `${email}:${token}`;
-    if (lastSyncKey.current === syncKey) return; // already synced with this combo
+    if (lastSyncKey.current === syncKey) return;
     lastSyncKey.current = syncKey;
 
-    // Read fresh local orders (avoids stale closure over the `orders` state)
     loadOrders(email).then(local => {
       if (activeEmailRef.current !== email) return;
       runFullSync(email, local, token);
@@ -129,8 +146,8 @@ export function OrdersProvider({ children }: { children: React.ReactNode }) {
     setSyncing(true);
     try {
       const merged = await fullSync(currentLocal, token);
-      if (activeEmailRef.current !== email) return; // identity changed while syncing
-      if (merged === null) return;                  // network failure — keep local
+      if (activeEmailRef.current !== email) return;
+      if (merged === null) return; // network failure — keep local
 
       setOrders(merged);
       saveOrders(merged, email).catch(() => {});
@@ -139,27 +156,57 @@ export function OrdersProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  // ── Pull-to-refresh: fetch live status for known order IDs ───────────────
+  // Uses the public GET /orders/:id endpoint (no auth needed) to get the latest
+  // status, tracking, and delivery date. Preserves local shipping address since
+  // the public endpoint doesn't return PII.
+  const refreshOrders = useCallback(async () => {
+    const email = activeEmailRef.current;
+    if (!email) return;
+
+    try {
+      const current = await loadOrders(email);
+      if (current.length === 0) return;
+
+      const ids = current.map(o => o.id);
+      const remote = await fetchOrdersByIds(ids);
+      if (remote.length === 0) return;
+
+      const merged = mergeStatusUpdates(current, remote);
+      if (activeEmailRef.current !== email) return;
+      setOrders(merged);
+      saveOrders(merged, email).catch(() => {});
+    } catch {
+      // Silently ignore network errors on manual refresh
+    }
+  }, []);
+
   // ── Place order: local-first + best-effort POST ──────────────────────────
   const placeOrder = useCallback(async (
     bookMonthKey: string,
     bookTitle: string,
     pageCount: number,
     address: ShippingAddress,
+    orderId?: string,
+    initialStatus?: OrderStatus,
   ): Promise<PrintOrder> => {
     if (!userEmail) throw new Error('Must be signed in to place an order');
 
-    const order = createOrder(bookMonthKey, bookTitle, pageCount, address);
-    const next = [order, ...orders];
+    const order = createOrder(bookMonthKey, bookTitle, pageCount, address, orderId, initialStatus);
+
+    // Idempotent: replace an existing record with the same ID
+    const current = await loadOrders(userEmail);
+    const next = [order, ...current.filter(o => o.id !== order.id)];
     setOrders(next);
     await saveOrders(next, userEmail);
 
-    // Best-effort POST. If offline, fullSync will upload it on next connection.
+    // Best-effort POST to server. If offline, fullSync will upload on next connection.
     if (accessToken) {
       syncOrderToServer(order, accessToken).catch(() => {});
     }
 
     return order;
-  }, [orders, userEmail, accessToken]);
+  }, [orders, userEmail, accessToken]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const getOrdersForBook = useCallback(
     (monthKey: string) => orders.filter(o => o.bookMonthKey === monthKey),
@@ -167,7 +214,7 @@ export function OrdersProvider({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <OrdersContext.Provider value={{ orders, loading, syncing, placeOrder, getOrdersForBook }}>
+    <OrdersContext.Provider value={{ orders, loading, syncing, placeOrder, getOrdersForBook, refreshOrders }}>
       {children}
     </OrdersContext.Provider>
   );

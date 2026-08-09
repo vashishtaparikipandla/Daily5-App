@@ -1,12 +1,11 @@
-import app from "./app";
-import { logger } from "./lib/logger";
+import app from "./app.js";
+import { logger } from "./lib/logger.js";
+import { startGelatoRetryWorker } from "./routes/orders.js";
 
 const rawPort = process.env["PORT"];
 
 if (!rawPort) {
-  throw new Error(
-    "PORT environment variable is required but was not provided.",
-  );
+  throw new Error("PORT environment variable is required but was not provided.");
 }
 
 const port = Number(rawPort);
@@ -22,4 +21,10 @@ app.listen(port, (err) => {
   }
 
   logger.info({ port }, "Server listening");
+
+  // Start the durable Gelato retry worker.
+  // It reschedules 'processing' orders whose Gelato submission failed transiently
+  // (e.g. network timeout after Stripe webhook), self-healing without operator action.
+  startGelatoRetryWorker();
+  logger.info("Gelato retry worker started (5-minute interval)");
 });
