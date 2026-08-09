@@ -3,6 +3,18 @@
     "name": "Daily 5",
     "slug": "daily5-android",
     "version": "1.0.0",
+    "owner": "REPLACE_WITH_YOUR_EXPO_USERNAME",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/REPLACE_WITH_YOUR_PROJECT_ID"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "REPLACE_WITH_YOUR_PROJECT_ID"
+      }
+    },
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "daily5-android",
@@ -48,7 +60,8 @@
         {
           "faceIDPermission": "Daily 5 uses Face ID so you can unlock your diary quickly."
         }
-      ]
+      ],
+      "expo-updates"
     ],
     "experiments": {
       "typedRoutes": false,
