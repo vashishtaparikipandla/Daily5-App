@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity, FlatList,
-  Dimensions, Platform, Alert,
+  Dimensions, Platform, Alert, ActivityIndicator,
 } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -12,6 +12,7 @@ import { EntrySlot } from '@/components/EntrySlot';
 import { BookCover } from '@/components/BookCover';
 import { ProtectedScreen } from '@/components/ProtectedScreen';
 import { monthLabel, formatShortDate } from '@/lib/data';
+import { exportBookAsPdf } from '@/lib/pdfExport';
 import type { Book, DayLog } from '@/lib/data';
 
 const { width: SW } = Dimensions.get('window');
@@ -63,6 +64,7 @@ function BookViewerContent() {
   const { getBook, lockCurrentMonth } = useDiary();
   const flatRef = useRef<FlatList>(null);
   const [pageIndex, setPageIndex] = useState(0);
+  const [exporting, setExporting] = useState(false);
 
   const book = getBook(mk ?? '');
 
@@ -94,6 +96,18 @@ function BookViewerContent() {
     );
   }
 
+  async function handleExportPdf() {
+    if (exporting) return;
+    setExporting(true);
+    try {
+      await exportBookAsPdf(book!);
+    } catch (e) {
+      Alert.alert('Export failed', 'Could not generate the PDF. Please try again.');
+    } finally {
+      setExporting(false);
+    }
+  }
+
   return (
     <View style={[styles.root, { backgroundColor: colors.background }]}>
       <View style={[styles.header, { paddingTop: topPad, borderBottomColor: colors.border }]}>
@@ -103,12 +117,25 @@ function BookViewerContent() {
         <Text style={[styles.headerTitle, { color: colors.foreground, fontFamily: 'PlayfairDisplay_700Bold' }]}>
           {monthLabel(book.monthKey)}
         </Text>
-        <TouchableOpacity
-          onPress={() => router.push({ pathname: '/order-flow', params: { monthKey: book.monthKey } } as any)}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        >
-          <Ionicons name="print-outline" size={22} color={colors.primary} />
-        </TouchableOpacity>
+        <View style={styles.headerActions}>
+          <TouchableOpacity
+            onPress={handleExportPdf}
+            disabled={exporting}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            style={styles.headerBtn}
+          >
+            {exporting
+              ? <ActivityIndicator size="small" color={colors.primary} />
+              : <Ionicons name="share-outline" size={22} color={colors.primary} />}
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => router.push({ pathname: '/order-flow', params: { monthKey: book.monthKey } } as any)}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            style={styles.headerBtn}
+          >
+            <Ionicons name="print-outline" size={22} color={colors.primary} />
+          </TouchableOpacity>
+        </View>
       </View>
 
       <FlatList
@@ -158,6 +185,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   headerTitle: { fontSize: 18, letterSpacing: 0.2 },
+  headerActions: { flexDirection: 'row', alignItems: 'center', gap: 16 },
+  headerBtn: { width: 28, height: 28, alignItems: 'center', justifyContent: 'center' },
   page: { alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24, paddingVertical: 20, gap: 12 },
   coverTitle: { fontSize: 24, letterSpacing: 0.3, marginTop: 16 },
   coverSub: { fontSize: 13, fontFamily: 'Inter_400Regular' },
